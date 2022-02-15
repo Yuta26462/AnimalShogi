@@ -9,7 +9,7 @@
 * 5<br>
 
 |	|ボード|
-|---|---|
+|---|:---:|
 |	|□□□□<br>□□□□<br>□□□□<br>□□□□<br>□□□□<br>□□□□<br>□□□□|
 |	|![alt](https://qph.fs.quoracdn.net/main-qimg-3facd2ff72539f4687eb3eb36ced11a0)
 
