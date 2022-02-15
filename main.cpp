@@ -1,8 +1,8 @@
 /*****************************************
-* ‘æ‚WÍ@ƒ~ƒjƒQ[ƒ€‚ğ‚Â‚­‚éi‚Tj
-*	Match 3 Puzzle (ƒ}ƒbƒ`‚RƒpƒYƒ‹)
+* ç¬¬ï¼˜ç« ã€€ãƒŸãƒ‹ã‚²ãƒ¼ãƒ ã‚’ã¤ãã‚‹ï¼ˆï¼•ï¼‰
+*	Match 3 Puzzle (ãƒãƒƒãƒï¼“ãƒ‘ã‚ºãƒ«)
 * ****************************************/
-								//P.15	‡J`
+								//P.15	â‘ªï½
 #include"DxLib.h"
 #include<stdlib.h>
 
@@ -50,11 +50,11 @@ int g_Mission;
 int g_Item[ITEM_MAX];
 int g_Time;
 
-int g_Status = 0;		// 0...ƒvƒŒƒCƒ„[‘€ì’†
-int g_SelectX1;		// 1‰ñ–Ú‚É‘I‘ğ‚µ‚½ƒuƒƒbƒN‚Ì“ñŸŒ³”z—ñ(‰¡)
-int g_SelectY1;		// 1‰ñ–Ú‚É‘I‘ğ‚µ‚½ƒuƒƒbƒN‚Ì“ñŸŒ³”z—ñ(c)
-int g_SelectX2;		// 2‰ñ–Ú‚É‘I‘ğ‚µ‚½ƒuƒƒbƒN‚Ì“ñŸŒ³”z—ñ(‰¡)
-int g_SelectY2;		// 2‰ñ–Ú‚É‘I‘ğ‚µ‚½ƒuƒƒbƒN‚Ì“ñŸŒ³”z—ñ(c)
+int g_Status = 0;		// 0...ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æ“ä½œä¸­
+int g_SelectX1;		// 1å›ç›®ã«é¸æŠã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®äºŒæ¬¡å…ƒé…åˆ—(æ¨ª)
+int g_SelectY1;		// 1å›ç›®ã«é¸æŠã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®äºŒæ¬¡å…ƒé…åˆ—(ç¸¦)
+int g_SelectX2;		// 2å›ç›®ã«é¸æŠã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®äºŒæ¬¡å…ƒé…åˆ—(æ¨ª)
+int g_SelectY2;		// 2å›ç›®ã«é¸æŠã—ãŸãƒ–ãƒ­ãƒƒã‚¯ã®äºŒæ¬¡å…ƒé…åˆ—(ç¸¦)
 
 int g_TitleBGM, g_GameClearSE, g_GameOverSE, g_ClickSE, g_FadeOutSE, g_MoveBlockSE;
 
@@ -102,7 +102,7 @@ struct Object g_Block[HEIGHT][WIDTH];
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
-	SetMainWindowText("Match 3 Puzzle (ƒ}ƒbƒ`‚RƒpƒYƒ‹)");
+	SetMainWindowText("Match 3 Puzzle (ãƒãƒƒãƒï¼“ãƒ‘ã‚ºãƒ«)");
 
 	ChangeWindowMode(TRUE);
 
@@ -114,7 +114,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (LoadSounds() == -1) return -1;
 
 
-	// ƒQ[ƒ€ƒ‹[ƒv
+	// ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—
 	while (ProcessMessage() == 0 && g_GameState != END && !(g_Keyflg & PAD_INPUT_START)) {
 
 		g_OldKey = g_NowKey;
@@ -195,7 +195,7 @@ void GameInit(void) {
 				g_Block[i][j].w = BLOCKSIZE;
 				g_Block[i][j].h = BLOCKSIZE;
 				//g_Block[i][j].image = 1;	// GetRand(7) + 1;
-				g_Block[i][j].image = GetRand(7) + 1;	// 1`8‚Ü‚Å‚É—”‚ğ¶¬
+				g_Block[i][j].image = GetRand(7) + 1;	// 1ï½8ã¾ã§ã«ä¹±æ•°ã‚’ç”Ÿæˆ
 			}
 		}
 	}
@@ -203,7 +203,7 @@ void GameInit(void) {
 
 	g_Score = 0;
 	g_Level = 0;
-	g_Mission = 2;			// ƒŒƒxƒ‹1‚ÍÁ‹‚·‚éƒuƒƒbƒN”‚ª3‚©‚çƒXƒ^[ƒg
+	g_Mission = 2;			// ãƒ¬ãƒ™ãƒ«1ã¯æ¶ˆå»ã™ã‚‹ãƒ–ãƒ­ãƒƒã‚¯æ•°ãŒ3ã‹ã‚‰ã‚¹ã‚¿ãƒ¼ãƒˆ
 
 	StageInit();
 }
@@ -232,8 +232,8 @@ void GameMain(void) {
 	if (g_Keyflg & MOUSE_INPUT_RIGHT)g_GameState = GAME_OVER;
 
 	SetFontSize(16);
-	DrawString(150, 420, "---- ¶ƒNƒŠƒbƒN‚ÅƒQ[ƒ€ƒNƒŠƒA‚Ö ----", 0xffffff, 0);
-	DrawString(150, 450, "---- ‰EƒNƒŠƒbƒN‚ÅƒQ[ƒ€ƒI[ƒo[‚Ö ----", 0xffffff, 0);*/
+	DrawString(150, 420, "---- å·¦ã‚¯ãƒªãƒƒã‚¯ã§ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢ã¸ ----", 0xffffff, 0);
+	DrawString(150, 450, "---- å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã¸ ----", 0xffffff, 0);*/
 
 
 	switch (g_Status) {
@@ -260,7 +260,7 @@ void GameMain(void) {
 	}
 
 
-	// ƒ^ƒCƒ€•Ï”‚ğƒfƒNƒŠƒƒ“ƒg‚µ‚ÄA0–¢–‚É‚È‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[‚ÖˆÚs‚·‚é
+	// ã‚¿ã‚¤ãƒ å¤‰æ•°ã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã—ã¦ã€0æœªæº€ã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã¸ç§»è¡Œã™ã‚‹
 	if (--g_Time < 0) {
 		g_GameState = GAME_OVER;
 	}
@@ -276,9 +276,9 @@ void DrawGameClear(void) {
 			PlaySoundMem(g_GameClearSE, DX_PLAYTYPE_BACK);
 		}
 		else {
-			// ƒXƒe[ƒW‰Šúˆ—
+			// ã‚¹ãƒ†ãƒ¼ã‚¸åˆæœŸå‡¦ç†
 			StageInit();
-			g_GameState = GAME_MAIN;	//‰ü•Ï
+			g_GameState = GAME_MAIN;	//æ”¹å¤‰
 			GameClearFlg = 0;
 		}
 	}
@@ -287,14 +287,14 @@ void DrawGameClear(void) {
 	//if (g_Keyflg & MOUSE_INPUT_RIGHT) {
 	//	//g_GameState = GAME_TITLE;
 
-	//	// ƒXƒe[ƒW‰Šúˆ—
+	//	// ã‚¹ãƒ†ãƒ¼ã‚¸åˆæœŸå‡¦ç†
 	//	StageInit();
 	//	g_GameState = GAME_MAIN;
 	//}
 	////SetFontSize(16);
-	////DrawString(150, 450, "---- ‰EƒNƒŠƒbƒN‚Åƒ^ƒCƒgƒ‹‚Ö ----", 0xffffff, 0);
+	////DrawString(150, 450, "---- å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚¿ã‚¤ãƒˆãƒ«ã¸ ----", 0xffffff, 0);
 	//SetFontSize(20);
-	//DrawString(150, 450, "---- ‰EƒNƒŠƒbƒN‚ÅŸ‚ÌƒXƒe[ƒW‚Ö ----", 0xffffff, 0);
+	//DrawString(150, 450, "---- å³ã‚¯ãƒªãƒƒã‚¯ã§æ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã¸ ----", 0xffffff, 0);
 }
 
 
@@ -307,7 +307,7 @@ void DrawGameOver(void) {
 			PlaySoundMem(g_GameOverSE, DX_PLAYTYPE_BACK);
 		}
 		else {
-			g_GameState = GAME_TITLE;	//‰ü•Ï
+			g_GameState = GAME_TITLE;	//æ”¹å¤‰
 			GameOverFlg = 0;
 		}
 	}
@@ -315,7 +315,7 @@ void DrawGameOver(void) {
 
 	//if (g_Keyflg & MOUSE_INPUT_RIGHT)g_GameState = GAME_TITLE;
 	//SetFontSize(16);
-	//DrawString(150, 450, "---- ‰EƒNƒŠƒbƒN‚Åƒ^ƒCƒgƒ‹‚Ö ----", 0xffffff, 0);
+	//DrawString(150, 450, "---- å³ã‚¯ãƒªãƒƒã‚¯ã§ã‚¿ã‚¤ãƒˆãƒ«ã¸ ----", 0xffffff, 0);
 }
 
 
@@ -337,7 +337,7 @@ int LoadImages() {
 void DrawStage(void) {
 
 
-	// ƒŒƒxƒ‹‚ğ•`‰æ
+	// ãƒ¬ãƒ™ãƒ«ã‚’æç”»
 	int TmpLevel = g_Level;
 	int PosX = 600;
 	do {
@@ -347,7 +347,7 @@ void DrawStage(void) {
 	} while (TmpLevel > 0);
 
 
-	// ƒXƒRƒA‚ğ•`‰æ
+	// ã‚¹ã‚³ã‚¢ã‚’æç”»
 	int TmpScore = g_Score;
 	PosX = 620;
 	do {
@@ -356,18 +356,18 @@ void DrawStage(void) {
 		PosX -= 20;
 	} while (TmpScore > 0);
 
-	// ƒ~ƒbƒVƒ‡ƒ“‚ğ•`‰æ
+	// ãƒŸãƒƒã‚·ãƒ§ãƒ³ã‚’æç”»
 	SetFontSize(20);
 	DrawFormatString(590, 211, 0xFFFFFF, "%3d", g_Mission);
 
-	// ƒAƒCƒeƒ€‚Ìæ“¾ŒÂ”‚ğ•`‰æ
+	// ã‚¢ã‚¤ãƒ†ãƒ ã®å–å¾—å€‹æ•°ã‚’æç”»
 	for (int i = 0; i < ITEM_MAX; i++) {
 		DrawRotaGraph(540, 245 + i * 30, 0.5f, 0, g_BlockImage[i + 1], TRUE, 0);
 		DrawFormatString(580, 235 + i * 30, 0xFFFFFF, "%3d", g_Item[i]);
 	}
 
 
-	// ƒuƒƒbƒN‚ğ•`‰æ
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»
 	for (int i = 0; i < HEIGHT; i++) {
 		for (int j = 0; j < WIDTH; j++) {
 			if (g_Block[i][j].flg != 0 && g_Block[i][j].image != 0) {
@@ -377,7 +377,7 @@ void DrawStage(void) {
 	}
 
 
-	// ƒ^ƒCƒ€ƒo[‚ğ•`‰æ
+	// ã‚¿ã‚¤ãƒ ãƒãƒ¼ã‚’æç”»
 	DrawBox(491, 469, 509, 469 - g_Time / 60 * 2, 0x0033ff, TRUE);
 }
 
@@ -386,7 +386,7 @@ void StageInit(void) {
 
 	int Result = 0;
 
-	// ‹ó‚ÌƒuƒƒbƒN‚ğ¶¬‚·‚éˆ—
+	// ç©ºã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç”Ÿæˆã™ã‚‹å‡¦ç†
 	for (int i = 1; i < HEIGHT - 1; i++) {
 		for (int j = 1; j < WIDTH - 1; j++) {
 			if (g_Block[i][j].image == 0) {
@@ -396,21 +396,21 @@ void StageInit(void) {
 	}
 
 
-	// ƒuƒƒbƒN˜A½ƒ`ƒFƒbƒN
+	// ãƒ–ãƒ­ãƒƒã‚¯é€£é–ãƒã‚§ãƒƒã‚¯
 	for (int i = 1; i < HEIGHT - 1; i++) {
 		for (int j = 1; j < WIDTH - 1; j++) {
 			Result += RensaCheck(i, j);
 		}
 	}
 
-	if (Result == 0) {						// P.11 ‡H Œë‚è‚Ì‰Â”\«‘åI
+	if (Result == 0) {						// P.11 â‘¨ èª¤ã‚Šã®å¯èƒ½æ€§å¤§ï¼
 		g_GameState = GAME_MAIN;
 		}
 	g_Level += 1;
 	g_Mission += 1;
 	g_Time = TIMELIMIT;
 
-	//ƒJƒEƒ“ƒg”z—ñ‚Ì‰Šú‰»
+	//ã‚«ã‚¦ãƒ³ãƒˆé…åˆ—ã®åˆæœŸåŒ–
 	for (int i = 0; i < ITEM_MAX; i++) {
 		g_Item[i] = 0;
 	}
@@ -425,7 +425,7 @@ int RensaCheck(int y, int x) {
 	SaveBlock();
 	RensaCheckH(y, x, &CountH, &ColorH);
 	if (CountH < 3) {
-		RestoreBlock();		// ƒuƒƒbƒN‚Ì˜A½‚ª3ŒÂ–¢–‚È‚çƒuƒƒbƒN‚ğ–ß‚·
+		RestoreBlock();		// ãƒ–ãƒ­ãƒƒã‚¯ã®é€£é–ãŒ3å€‹æœªæº€ãªã‚‰ãƒ–ãƒ­ãƒƒã‚¯ã‚’æˆ»ã™
 	}
 
 
@@ -434,7 +434,7 @@ int RensaCheck(int y, int x) {
 	SaveBlock();
 	RensaCheckW(y, x, &CountW, &ColorW);
 	if (CountW < 3) {
-		RestoreBlock();		// ƒuƒƒbƒN‚Ì˜A½‚ª3ŒÂ–¢–‚È‚çƒuƒƒbƒN‚ğ–ß‚·
+		RestoreBlock();		// ãƒ–ãƒ­ãƒƒã‚¯ã®é€£é–ãŒ3å€‹æœªæº€ãªã‚‰ãƒ–ãƒ­ãƒƒã‚¯ã‚’æˆ»ã™
 	}
 
 
@@ -459,11 +459,11 @@ int RensaCheck(int y, int x) {
 
 int RensaCheckH(int y, int x, int* cnt, int* col) {
 	/**************************************************
-	* c‚Ì—×Ú‚µ‚Ä‚¢‚é“¯F‚ÌŒÂ”‚ğ’²‚×‚é(’TõŒã‚ÉÁ‚·)
-	* –ß‚è’lFc‚Ì—×Ú‚µ‚Ä‚¢‚é“¯F‚ÌŒÂ”
+	* ç¸¦ã®éš£æ¥ã—ã¦ã„ã‚‹åŒè‰²ã®å€‹æ•°ã‚’èª¿ã¹ã‚‹(æ¢ç´¢å¾Œã«æ¶ˆã™)
+	* æˆ»ã‚Šå€¤ï¼šç¸¦ã®éš£æ¥ã—ã¦ã„ã‚‹åŒè‰²ã®å€‹æ•°
 	**************************************************/
 
-	// ‘ÎÛƒuƒƒbƒN‚ªŠO˜g‚Ìê‡ return 0; ‚Åˆ—‚ğU‚¯‚é
+	// å¯¾è±¡ãƒ–ãƒ­ãƒƒã‚¯ãŒå¤–æ ã®å ´åˆ return 0; ã§å‡¦ç†ã‚’æ‹”ã‘ã‚‹
 	if (g_Block[y][x].image == 0) return 0;
 
 	*col = g_Block[y][x].image;
@@ -480,11 +480,11 @@ int RensaCheckH(int y, int x, int* cnt, int* col) {
 
 int RensaCheckW(int y, int x, int* cnt, int* col) {
 	/**************************************************
-	* ‰¡‚Ì—×Ú‚µ‚Ä‚¢‚é“¯F‚ÌŒÂ”‚ğ’²‚×‚é(’TõŒã‚ÉÁ‚·)
-	* –ß‚è’lF‰¡‚Ì—×Ú‚µ‚Ä‚¢‚é“¯F‚ÌŒÂ”
+	* æ¨ªã®éš£æ¥ã—ã¦ã„ã‚‹åŒè‰²ã®å€‹æ•°ã‚’èª¿ã¹ã‚‹(æ¢ç´¢å¾Œã«æ¶ˆã™)
+	* æˆ»ã‚Šå€¤ï¼šæ¨ªã®éš£æ¥ã—ã¦ã„ã‚‹åŒè‰²ã®å€‹æ•°
 	**************************************************/
 
-	// ‘ÎÛƒuƒƒbƒN‚ªŠO˜g‚Ìê‡ return 0; ‚Åˆ—‚ğU‚¯‚é
+	// å¯¾è±¡ãƒ–ãƒ­ãƒƒã‚¯ãŒå¤–æ ã®å ´åˆ return 0; ã§å‡¦ç†ã‚’æ‹”ã‘ã‚‹
 	if (g_Block[y][x].image == 0) return 0;
 
 	*col = g_Block[y][x].image;
@@ -525,13 +525,13 @@ void SelectBlock(void) {
 	int SelectX = g_MouseX / BLOCKSIZE;
 	int SelectY = g_MouseY / BLOCKSIZE;
 
-	// ‘I‘ğƒuƒƒbƒN‚Ì”ÍˆÍ‚ğ§Œä
+	// é¸æŠãƒ–ãƒ­ãƒƒã‚¯ã®ç¯„å›²ã‚’åˆ¶å¾¡
 	if (SelectX < 0)SelectX = 0;
 	if (SelectX > WIDTH - 3)SelectX = WIDTH - 3;
 	if (SelectY < 0)SelectY = 0;
 	if (SelectY > HEIGHT - 3)SelectY = HEIGHT - 3;
 
-	// ƒNƒŠƒbƒN‚ÅƒuƒƒbƒN‚ğ‘I‘ğ
+	// ã‚¯ãƒªãƒƒã‚¯ã§ãƒ–ãƒ­ãƒƒã‚¯ã‚’é¸æŠ
 	if (g_Keyflg & MOUSE_INPUT_LEFT) {
 		PlaySoundMem(g_ClickSE, DX_PLAYTYPE_BACK);
 		if (ClickFlg == 0) {
@@ -548,12 +548,12 @@ void SelectBlock(void) {
 		}
 	}
 
-	// ‘I‘ğƒuƒƒbƒN‚ğ•`‰æ
+	// é¸æŠãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»
 	DrawGraph(SelectX * BLOCKSIZE, SelectY * BLOCKSIZE, g_BlockImage[9], TRUE);
 	if (ClickFlg >= 1) {
 		DrawGraph(g_SelectX1 * BLOCKSIZE, g_SelectY1 * BLOCKSIZE, g_BlockImage[9], TRUE);
 	}
-	// ‘I‘ğƒuƒƒbƒN‚ğŒğŠ·
+	// é¸æŠãƒ–ãƒ­ãƒƒã‚¯ã‚’äº¤æ›
 	if (ClickFlg == 2) {
 		int TmpBlock = g_Block[g_SelectY1 + 1][g_SelectX1 + 1].image;
 		g_Block[g_SelectY1 + 1][g_SelectX1 + 1].image = g_Block[g_SelectY2 + 1][g_SelectX2 + 1].image;
@@ -561,24 +561,24 @@ void SelectBlock(void) {
 		g_Block[g_SelectY2 + 1][g_SelectX2 + 1].image = TmpBlock;
 
 
-		// ˜A½‚ª3‚ÂˆÈã‚©’²‚×‚é
+		// é€£é–ãŒ3ã¤ä»¥ä¸Šã‹èª¿ã¹ã‚‹
 		int Result = 0;
 		Result += RensaCheck(g_SelectY1 + 1, g_SelectX1 + 1);
 		Result += RensaCheck(g_SelectY2 + 1, g_SelectX2 + 1);
 
-		// ˜A½‚ª3–¢–‚È‚ç‘I‘ğƒuƒƒbƒN‚ğŒ³‚É–ß‚·
+		// é€£é–ãŒ3æœªæº€ãªã‚‰é¸æŠãƒ–ãƒ­ãƒƒã‚¯ã‚’å…ƒã«æˆ»ã™
 		if (Result == 0) {
 			TmpBlock = g_Block[g_SelectY1 + 1][g_SelectX1 + 1].image;
 			g_Block[g_SelectY1 + 1][g_SelectX1 + 1].image = g_Block[g_SelectY2 + 1][g_SelectX2 + 1].image;
 			g_Block[g_SelectY2 + 1][g_SelectX2 + 1].image = TmpBlock;
 		}
 		else {
-			// ˜A½‚ª3‚ÂˆÈã‚È‚çƒuƒƒbƒN‚ğÁ‚µAƒuƒƒbƒNˆÚ“®ˆ—‚ÖˆÚs‚·‚é
+			// é€£é–ãŒ3ã¤ä»¥ä¸Šãªã‚‰ãƒ–ãƒ­ãƒƒã‚¯ã‚’æ¶ˆã—ã€ãƒ–ãƒ­ãƒƒã‚¯ç§»å‹•å‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 			g_Status = 1;
 		}
 
 
-		// Ÿ‚ÉƒNƒŠƒbƒN‚ª‚Å‚«‚é‚æ‚¤‚ÉAClickFlg ‚ğ0‚É‚·‚éB
+		// æ¬¡ã«ã‚¯ãƒªãƒƒã‚¯ãŒã§ãã‚‹ã‚ˆã†ã«ã€ClickFlg ã‚’0ã«ã™ã‚‹ã€‚
 		ClickFlg = 0;
 	}
 }
@@ -588,7 +588,7 @@ void MoveBlock(void) {
 
 	PlaySoundMem(g_MoveBlockSE, DX_PLAYTYPE_BACK);
 
-	// ‰º‚ÖˆÚ“®‚·‚éˆ—
+	// ä¸‹ã¸ç§»å‹•ã™ã‚‹å‡¦ç†
 	for (int i = 1; i < HEIGHT - 1; i++) {
 		for (int j = 1; j < WIDTH - 1; j++) {
 			if (g_Block[i][j].image == 0) {
@@ -600,7 +600,7 @@ void MoveBlock(void) {
 		}
 	}
 
-	// ‹ó‚ÌƒuƒƒbƒN‚ğ¶¬‚·‚éˆ—
+	// ç©ºã®ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç”Ÿæˆã™ã‚‹å‡¦ç†
 	for (int i = 1; i < HEIGHT - 1; i++) {
 		for (int j = 1; j < WIDTH - 1; j++) {
 			if (g_Block[i][j].image == 0) {
@@ -610,10 +610,10 @@ void MoveBlock(void) {
 	}
 
 
-	// ƒuƒƒbƒN‘I‘ğˆ—‚ÖˆÚs‚·‚é
+	// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠå‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 	//g_Status = 0;
 
-	// ƒuƒƒbƒN˜A½ƒ`ƒFƒbƒNˆ—‚ÖˆÚs‚·‚é
+	// ãƒ–ãƒ­ãƒƒã‚¯é€£é–ãƒã‚§ãƒƒã‚¯å‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 	g_Status = 3;
 }
 
@@ -628,26 +628,26 @@ void CheckBlock(void) {
 		}
 	}
 
-	// ˜A½‚ª‚È‚­‚È‚ê‚ÎAƒuƒƒbƒN‘I‘ğ‚ÖˆÚs‚·‚é
-	// ‚»‚¤‚Å‚È‚¯‚ê‚ÎAƒuƒƒbƒNˆÚ“®‚ÖˆÚs‚µ‚Ä˜A½ƒ`ƒFƒbƒN‚ğŒp‘±‚·‚é
+	// é€£é–ãŒãªããªã‚Œã°ã€ãƒ–ãƒ­ãƒƒã‚¯é¸æŠã¸ç§»è¡Œã™ã‚‹
+	// ãã†ã§ãªã‘ã‚Œã°ã€ãƒ–ãƒ­ãƒƒã‚¯ç§»å‹•ã¸ç§»è¡Œã—ã¦é€£é–ãƒã‚§ãƒƒã‚¯ã‚’ç¶™ç¶šã™ã‚‹
 	if (Result == 0) {
-		// ƒuƒƒbƒN‘I‘ğˆ—‚ÖˆÚs‚·‚é
+		// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠå‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 		//g_Status = 0;
 
-		// ƒNƒŠƒAğŒ‚Ìƒ`ƒFƒbƒNˆ—‚ÖˆÚs‚·‚é
+		// ã‚¯ãƒªã‚¢æ¡ä»¶ã®ãƒã‚§ãƒƒã‚¯å‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 		g_Status = 4;
 	}
 	else {
-		// ˜A½‚ª3‚ÂˆÈã‚È‚çƒuƒƒbƒN‚ğÁ‚µAƒuƒƒbƒNˆÚsˆ—‚ÖˆÚs‚·‚é
+		// é€£é–ãŒ3ã¤ä»¥ä¸Šãªã‚‰ãƒ–ãƒ­ãƒƒã‚¯ã‚’æ¶ˆã—ã€ãƒ–ãƒ­ãƒƒã‚¯ç§»è¡Œå‡¦ç†ã¸ç§»è¡Œã™ã‚‹
 		g_Status = 1;
 	}
 }
 
 void CheckClear(void) {
 
-	// ƒNƒŠƒAğŒ‚Ìƒ`ƒFƒbƒN
-	// ƒNƒŠƒAğŒƒtƒ‰ƒO‚ğ 0 ‚Æ‚µAŠeƒXƒN[ƒ‹‚ÌÁ‹ƒuƒƒbƒN‚ª
-	// ƒŒƒxƒ‹‚æ‚è‚àƒuƒƒbƒN”‚ª­‚È‚©‚Á‚½‚çAƒ`ƒFƒbƒNˆ—‚ğ’†’f‚µ‚ÄƒQ[ƒ€‚ğ‘±s‚·‚é
+	// ã‚¯ãƒªã‚¢æ¡ä»¶ã®ãƒã‚§ãƒƒã‚¯
+	// ã‚¯ãƒªã‚¢æ¡ä»¶ãƒ•ãƒ©ã‚°ã‚’ 0 ã¨ã—ã€å„ã‚¹ã‚¯ãƒ¼ãƒ«ã®æ¶ˆå»ãƒ–ãƒ­ãƒƒã‚¯ãŒ
+	// ãƒ¬ãƒ™ãƒ«ã‚ˆã‚Šã‚‚ãƒ–ãƒ­ãƒƒã‚¯æ•°ãŒå°‘ãªã‹ã£ãŸã‚‰ã€ãƒã‚§ãƒƒã‚¯å‡¦ç†ã‚’ä¸­æ–­ã—ã¦ã‚²ãƒ¼ãƒ ã‚’ç¶šè¡Œã™ã‚‹
 
 	int ClearFlg = 0;
 	for (int i = 0; i < ITEM_MAX; i++) {
@@ -674,7 +674,7 @@ void FadeOutBlock(void) {
 	}
 
 	static int BlendMode = 255;
-	// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒAƒ‹ƒtƒ@ƒuƒŒƒ“ƒh‚É‚·‚é
+	// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚¢ãƒ«ãƒ•ã‚¡ãƒ–ãƒ¬ãƒ³ãƒ‰ã«ã™ã‚‹
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BlendMode);
 	for (int i = 1; i < HEIGHT - 1; i++) {
 		for (int j = 1; j < WIDTH - 1; j++) {
@@ -684,7 +684,7 @@ void FadeOutBlock(void) {
 		}
 	}
 
-	// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒm[ƒuƒŒƒ“ƒh‚É‚·‚é
+	// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ãƒãƒ¼ãƒ–ãƒ¬ãƒ³ãƒ‰ã«ã™ã‚‹
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	BlendMode -= 5;
