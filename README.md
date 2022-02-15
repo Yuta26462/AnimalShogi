@@ -17,3 +17,5 @@
 
 **リポジトリをクローン**  
 `git clone https://github.com/ユーザー名/AnimalShogi`
+
+`print`
