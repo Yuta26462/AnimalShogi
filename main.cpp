@@ -5,7 +5,7 @@
 								//P.15	⑪～
 #include"DxLib.h"
 #include<stdlib.h>
-
+int hhhh;
 
 typedef enum GAME_MODE {
 
