@@ -24,9 +24,26 @@ const int HEIGHT = 12;
 const int WIDTH = 12;
 
 
-int g_BlockImage[10];
 
-int g_NumberImage[10];
+const int ITEM_MAX = 8;
+const int TIMELIMIT = 3600 * 3;
+
+
+
+int g_OldKey, g_NowKey, g_Keyflg;
+int g_MouseX, g_MouseY;
+int g_GameState = GAME_TITLE;
+
+int g_TitleImage;
+
+int g_StageImage;
+
+int g_GameClearImage;
+int g_GameOverImage;
+
+
+
+
 int g_Score;
 int g_Level;
 int g_Mission;
@@ -41,7 +58,18 @@ int RensaCheck(int y, int x);
 int RensaCheckH(int y, int x, int* cnt, int* col);
 
 void SaveBlock(void);
+void RestoreBlock(void);
 
+void SelectBlock(void);
+
+void MoveBlock(void);
+
+void CheckBlock(void);
+void CheckClear(void);
+
+void FadeOutBlock(void);
+
+int LoadSounds(void);
 
 
 struct Object {
