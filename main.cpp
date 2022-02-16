@@ -1,8 +1,8 @@
 /*****************************************
-* 第８章　ミニゲームをつくる（５）
-*	Match 3 Puzzle (マッチ３パズル)
+* AnimalShogi
+*
 * ****************************************/
-								//P.15	⑪～
+								//work
 #include"DxLib.h"
 #include<stdlib.h>
 
@@ -22,24 +22,7 @@ typedef enum GAME_MODE {
 
 const int HEIGHT = 12;
 const int WIDTH = 12;
-const int BLOCKSIZE = 48;
-const int MARGIN = 0;
 
-const int ITEM_MAX = 8;
-const int TIMELIMIT = 3600 * 3;
-
-
-
-int g_OldKey, g_NowKey, g_Keyflg;
-int g_MouseX, g_MouseY;
-int g_GameState = GAME_TITLE;
-
-int g_TitleImage;
-
-int g_StageImage;
-
-int g_GameClearImage;
-int g_GameOverImage;
 
 int g_BlockImage[10];
 
@@ -48,45 +31,17 @@ int g_Score;
 int g_Level;
 int g_Mission;
 int g_Item[ITEM_MAX];
-int g_Time;
 
-int g_Status = 0;		// 0...プレイヤー操作中
-int g_SelectX1;		// 1回目に選択したブロックの二次元配列(横)
-int g_SelectY1;		// 1回目に選択したブロックの二次元配列(縦)
-int g_SelectX2;		// 2回目に選択したブロックの二次元配列(横)
-int g_SelectY2;		// 2回目に選択したブロックの二次元配列(縦)
-
-int g_TitleBGM, g_GameClearSE, g_GameOverSE, g_ClickSE, g_FadeOutSE, g_MoveBlockSE;
-
-void GameInit(void);
-void GameMain(void);
-void DrawGameTitle(void);
-void DrawGameClear(void);
-void DrawGameOver(void);
-void DrawEnd(void);
 
 int LoadImages();
 
-void DrawStage(void);
 
-void StageInit(void);
 
 int RensaCheck(int y, int x);
 int RensaCheckH(int y, int x, int* cnt, int* col);
-int RensaCheckW(int y, int x, int* cnt, int* col);
+
 void SaveBlock(void);
-void RestoreBlock(void);
 
-void SelectBlock(void);
-
-void MoveBlock(void);
-
-void CheckBlock(void);
-void CheckClear(void);
-
-void FadeOutBlock(void);
-
-int LoadSounds(void);
 
 
 struct Object {
