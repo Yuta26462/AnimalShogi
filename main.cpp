@@ -7,7 +7,6 @@
 #include<stdlib.h>
 
 int test;
-int sau;
 
 typedef enum GAME_MODE {
 
