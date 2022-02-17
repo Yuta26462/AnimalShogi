@@ -88,6 +88,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SetMainWindowText("Match 3 Puzzle (マッチ３パズル)");
 
+	//ウィンドウサイズ
+	SetGraphMode(640, 640, 32);
 	ChangeWindowMode(TRUE);
 
 	if (DxLib_Init() == -1)return -1;
