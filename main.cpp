@@ -35,9 +35,9 @@ int g_OldKey, g_NowKey, g_Keyflg;
 int g_MouseX, g_MouseY;
 int g_GameState = GAME_TITLE;
 
-int g_TitleImage;
+int KomaImage;
 
-int g_StageImage;
+int StageImage;
 
 int g_GameClearImage;
 int g_GameOverImage;
@@ -86,7 +86,7 @@ struct Object g_Block[HEIGHT][WIDTH];
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
-	SetMainWindowText("Match 3 Puzzle (マッチ３パズル)");
+	SetMainWindowText("AnimalShogi");
 
 	//ウィンドウサイズ
 	SetGraphMode(640, 640, 32);
@@ -305,19 +305,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 //}
 //
 //
-//int LoadImages() {
-//
-//	if ((g_TitleImage = LoadGraph("images/08/title.png")) == -1)return -1;
-//	if ((g_StageImage = LoadGraph("images/08/stage.png")) == -1)return -1;
-//	if ((g_GameClearImage = LoadGraph("images/08/gameclear.png")) == -1)return -1;
-//	if ((g_GameOverImage = LoadGraph("images/08/gameover.png")) == -1)return -1;
-//
-//	if (LoadDivGraph("images/08/block.png", 10, 10, 1, 48, 48, g_BlockImage) == -1) return -1;
-//
-//	if (LoadDivGraph("images/08/number.png", 10, 10, 1, 60, 120, g_NumberImage) == -1) return -1;
-//
-//	return 0;
-//}
+int LoadImages() {
+
+	if ((StageImage = LoadGraph("images/08/Stage.jpg")) == -1)return -1;
+
+	if (LoadDivGraph("images/coma.jpg", 9, 3, 3, 169, 139, KomaImage) == -1) return -1;
+
+	return 0;
+}
 //
 //
 //void DrawStage(void) {
