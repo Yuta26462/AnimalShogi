@@ -6,6 +6,7 @@
 #include"DxLib.h"
 #include<stdlib.h>
 
+int test;
 
 typedef enum GAME_MODE {
 
