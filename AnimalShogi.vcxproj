@@ -148,9 +148,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Users\miyag\OneDrive\ドキュメント\-KBC-\GitHub\AnimalShogi\main.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="P.20 Kadai.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
