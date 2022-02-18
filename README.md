@@ -9,9 +9,11 @@
 * 5<br>
 
 
-* 画像変数
-KomaImage
-StageImage
+* 画像変数  
+KomaImage  
+StageImage  
+
+[参考サイト](https://www.shogi.or.jp/column/2016/11/post_43.html)
 
 |	|ボード|
 |---|:---:|
