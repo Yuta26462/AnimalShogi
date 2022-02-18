@@ -27,15 +27,17 @@ const int WIDTH = 12;
 /***********************************************
  * 変数の宣言
  ***********************************************/
-int	g_OldKey;		//前回の入力キー
-int	g_NowKey;		//今回の入力キー
-int	g_KeyFlg;		//入力キー情報
-int	g_MouseX;		//マウスX座標
-int	g_MouseY;		//マウスY座標
-int	g_GameState = GAME_TITLE;   //ゲームモード
+int	OldKey;		//前回の入力キー
+int	NowKey;		//今回の入力キー
+int	KeyFlg;		//入力キー情報
+int	MouseX;		//マウスX座標
+int	MouseY;		//マウスY座標
+int	GameState = GAME_TITLE;   //ゲームモード
 
-int TitleImage;       //タイトル画像
-int StageImage;       //ステージ画像
+int WaitTime = 0;    //	待ち時間
+
+int TitleImage;      //タイトル画像
+int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
 
 /***********************************************
@@ -60,7 +62,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	SetMainWindowText("どうぶつしょうぎ");
 
 	//ウィンドウサイズ
-	SetGraphMode(640, 640, 32);
+	SetGraphMode(600, 700, 32);
 
 	//ウィンドウモードで起動
 	ChangeWindowMode(TRUE);
@@ -75,19 +77,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (LoadImages() == -1)   return -1;
 
 	// ゲームループ
-	while (ProcessMessage() == 0 && g_GameState != END && !(g_KeyFlg & PAD_INPUT_START))
+	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
 	{
 		// 入力キー取得
-		g_OldKey = g_NowKey;
-		g_NowKey = GetMouseInput();
-		g_KeyFlg = g_NowKey & ~g_OldKey;
+		OldKey = NowKey;
+		NowKey = GetMouseInput();
+		KeyFlg = NowKey & ~OldKey;
 
 		//マウスの位置を取得
-		GetMousePoint(&g_MouseX, &g_MouseY);
+		GetMousePoint(&MouseX, &MouseY);
 
 		ClearDrawScreen();		// 画面の初期化
 
-		switch (g_GameState)
+		switch (GameState)
 		{
 		case GAME_TITLE:
 			DrawGameTitle();
@@ -113,14 +115,25 @@ void DrawGameTitle(void)
 	//タイトル画像表示
 	DrawGraph(0, 0, TitleImage, FALSE);
 
-	DrawBox(200, 400, 460, 460, 0xffffff, TRUE);
+	//DrawBox(160, 405, 460, 465, 0xffffff, TRUE);
+
+	//文字の表示(点滅)
+	if (++WaitTime < 50)
+	{
+		SetFontSize(50);
+		DrawString(170, 410, "す た ぁ と", 0x000000);
+	}
+	else if (WaitTime > 100)
+	{
+		WaitTime = 0;
+	}
 
 	//ゲームモードを切り替える
-	if (g_KeyFlg & MOUSE_INPUT_LEFT)
+	if (KeyFlg & MOUSE_INPUT_LEFT)
 	{
-		if (g_MouseX > 200 && g_MouseX < 460 && g_MouseY>400 && g_MouseY < 465)
+		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
 		{
-			g_GameState = GAME_INIT;   //ゲームスタート
+			GameState = GAME_INIT;   //ゲームスタート
 		}
 	}
 }
@@ -128,10 +141,7 @@ void DrawGameTitle(void)
 void GameInit(void)
 {
 	//ゲームメイン処理へ
-	g_GameState = GAME_MAIN;
-
-	//ステージの初期化
-	StageInit();
+	GameState = GAME_MAIN;
 }
 
 void DrawStage(void)
@@ -155,9 +165,9 @@ void GameMain(void)
 int LoadImages()
 {
 	//タイトル
-	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
+	if ((TitleImage = LoadGraph("images/Free/Title.jpg")) == -1)   return -1;
 	//ステージ
-	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
+	if ((StageImage = LoadGraph("images/Free/Stage.jpg")) == -1)   return -1;
 	//ブロック画像
 	//if (LoadDivGraph("images/Free/1Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
