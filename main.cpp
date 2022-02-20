@@ -1,11 +1,11 @@
 /*******************************
-**	ã€€ã€€ã©ã†ã¶ã¤ã—ã‚‡ã†ãã€€ã€€ã€€**
+**	@@‚Ç‚¤‚Ô‚Â‚µ‚å‚¤‚¬@@@**
 *******************************/
 #include "DxLib.h"
 #include<stdlib.h>
 
 /***********************************************
- * åˆ—æŒ™ä½“ã®å®£è¨€
+ * —ñ‹“‘Ì‚ÌéŒ¾
  ***********************************************/
 typedef enum GAME_MODE
 {
@@ -19,75 +19,75 @@ typedef enum GAME_MODE
 };
 
 /***********************************************
- * å®šæ•°ã®å®£è¨€
+ * ’è”‚ÌéŒ¾
  ***********************************************/
 const int HEIGHT = 12;
 const int WIDTH = 12;
 
 /***********************************************
- * å¤‰æ•°ã®å®£è¨€
+ * •Ï”‚ÌéŒ¾
  ***********************************************/
-int	OldKey;		//å‰å›ã®å…¥åŠ›ã‚­ãƒ¼
-int	NowKey;		//ä»Šå›ã®å…¥åŠ›ã‚­ãƒ¼
-int	KeyFlg;		//å…¥åŠ›ã‚­ãƒ¼æƒ…å ±
-int	MouseX;		//ãƒã‚¦ã‚¹Xåº§æ¨™
-int	MouseY;		//ãƒã‚¦ã‚¹Yåº§æ¨™
-int	GameState = GAME_TITLE;   //ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
+int	OldKey;		//‘O‰ñ‚Ì“ü—ÍƒL[
+int	NowKey;		//¡‰ñ‚Ì“ü—ÍƒL[
+int	KeyFlg;		//“ü—ÍƒL[î•ñ
+int	MouseX;		//ƒ}ƒEƒXXÀ•W
+int	MouseY;		//ƒ}ƒEƒXYÀ•W
+int	GameState = GAME_TITLE;   //ƒQ[ƒ€ƒ‚[ƒh
 
-int WaitTime = 0;    //	å¾…ã¡æ™‚é–“
+int WaitTime = 0;    //	‘Ò‚¿ŠÔ
 
-int TitleImage;      //ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒ
-int StageImage;      //ã‚¹ãƒ†ãƒ¼ã‚¸ç”»åƒ
-int KomaImage[10];   //ã‚³ãƒç”»åƒ
+int TitleImage;      //ƒ^ƒCƒgƒ‹‰æ‘œ
+int StageImage;      //ƒXƒe[ƒW‰æ‘œ
+int KomaImage[10];   //ƒRƒ}‰æ‘œ
 
 /***********************************************
- * é–¢æ•°ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
+ * ŠÖ”‚Ìƒvƒƒgƒ^ƒCƒvéŒ¾
  ***********************************************/
-void GameInit(void);		//ã‚²ãƒ¼ãƒ åˆæœŸåŒ–å‡¦ç†
-void GameMain(void);		//ã‚²ãƒ¼ãƒ ãƒ¡ã‚¤ãƒ³å‡¦ç†
-void DrawGameTitle(void);	//ã‚²ãƒ¼ãƒ ã‚¿ã‚¤ãƒˆãƒ«å‡¦ç†
+void GameInit(void);		//ƒQ[ƒ€‰Šú‰»ˆ—
+void GameMain(void);		//ƒQ[ƒ€ƒƒCƒ“ˆ—
+void DrawGameTitle(void);	//ƒQ[ƒ€ƒ^ƒCƒgƒ‹ˆ—
 
-void DrawStage(void);	    //ã‚¹ãƒ†ãƒ¼ã‚¸
-void StageInit(void);	    //ã‚¹ãƒ†ãƒ¼ã‚¸åˆæœŸå‡¦ç†
+void DrawStage(void);	    //ƒXƒe[ƒW
+void StageInit(void);	    //ƒXƒe[ƒW‰Šúˆ—
 
-int LoadImages(void);      //ç”»åƒèª­è¾¼ã¿
+int LoadImages(void);      //‰æ‘œ“Ç‚İ
 
 /***********************************************
- * ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é–‹å§‹
+ * ƒvƒƒOƒ‰ƒ€‚ÌŠJn
  ***********************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-	//ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
-	SetMainWindowText("ã©ã†ã¶ã¤ã—ã‚‡ã†ã");
+	//ƒ^ƒCƒgƒ‹‚ğİ’è
+	SetMainWindowText("‚Ç‚¤‚Ô‚Â‚µ‚å‚¤‚¬");
 
-	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º
+	//ƒEƒBƒ“ƒhƒEƒTƒCƒY
 	SetGraphMode(600, 700, 32);
 
-	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰ã§èµ·å‹•
+	//ƒEƒBƒ“ƒhƒEƒ‚[ƒh‚Å‹N“®
 	ChangeWindowMode(TRUE);
 
-	//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®åˆæœŸåŒ–å‡¦ç†
+	//DXƒ‰ƒCƒuƒ‰ƒŠ‚Ì‰Šú‰»ˆ—
 	if (DxLib_Init() == -1)   return -1;
 
-	//æç”»å…ˆç”»é¢ã‚’è£ã«ã™ã‚‹
+	//•`‰ææ‰æ–Ê‚ğ— ‚É‚·‚é
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	//ç”»åƒèª­è¾¼ã¿é–¢æ•°ã‚’å‘¼ã³å‡ºã—
+	//‰æ‘œ“Ç‚İŠÖ”‚ğŒÄ‚Ño‚µ
 	if (LoadImages() == -1)   return -1;
 
-	// ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—
+	// ƒQ[ƒ€ƒ‹[ƒv
 	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
 	{
-		// å…¥åŠ›ã‚­ãƒ¼å–å¾—
+		// “ü—ÍƒL[æ“¾
 		OldKey = NowKey;
 		NowKey = GetMouseInput();
 		KeyFlg = NowKey & ~OldKey;
 
-		//ãƒã‚¦ã‚¹ã®ä½ç½®ã‚’å–å¾—
+		//ƒ}ƒEƒX‚ÌˆÊ’u‚ğæ“¾
 		GetMousePoint(&MouseX, &MouseY);
 
-		ClearDrawScreen();		// ç”»é¢ã®åˆæœŸåŒ–
+		ClearDrawScreen();		// ‰æ–Ê‚Ì‰Šú‰»
 
 		switch (GameState)
 		{
@@ -102,45 +102,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			GameMain();
 			break;
 		}
-		ScreenFlip();			//è£ç”»é¢ã®å†…å®¹ã‚’è¡¨ç”»é¢ã«åæ˜ 
+		ScreenFlip();			//— ‰æ–Ê‚Ì“à—e‚ğ•\‰æ–Ê‚É”½‰f
 	}
 
-	DxLib_End();	//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½¿ç”¨ã®çµ‚äº†å‡¦ç†
+	DxLib_End();	//DXƒ‰ƒCƒuƒ‰ƒŠg—p‚ÌI—¹ˆ—
 
-	return 0;	//ã‚½ãƒ•ãƒˆã®çµ‚äº†
+	return 0;	//ƒ\ƒtƒg‚ÌI—¹
 }
 
 void DrawGameTitle(void)
 {
-	//ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒè¡¨ç¤º
+	//ƒ^ƒCƒgƒ‹‰æ‘œ•\¦
 	DrawGraph(0, 0, TitleImage, FALSE);
 
 	//DrawBox(160, 405, 460, 465, 0xffffff, TRUE);
 
-	//æ–‡å­—ã®è¡¨ç¤º(ç‚¹æ»…)
+	//•¶š‚Ì•\¦(“_–Å)
 	if (++WaitTime < 50)
 	{
 		SetFontSize(50);
-		DrawString(170, 410, "ã™ ãŸ ã ã¨", 0x000000);
+		DrawString(170, 410, "‚· ‚½ ‚Ÿ ‚Æ", 0x000000);
 	}
 	else if (WaitTime > 100)
 	{
 		WaitTime = 0;
 	}
 
-	//ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
+	//ƒQ[ƒ€ƒ‚[ƒh‚ğØ‚è‘Ö‚¦‚é
 	if (KeyFlg & MOUSE_INPUT_LEFT)
 	{
 		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
 		{
-			GameState = GAME_INIT;   //ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆ
+			GameState = GAME_INIT;   //ƒQ[ƒ€ƒXƒ^[ƒg
 		}
 	}
 }
 
 void GameInit(void)
 {
-	//ã‚²ãƒ¼ãƒ ãƒ¡ã‚¤ãƒ³å‡¦ç†ã¸
+	//ƒQ[ƒ€ƒƒCƒ“ˆ—‚Ö
 	GameState = GAME_MAIN;
 }
 
@@ -157,17 +157,17 @@ void StageInit(void)
 
 void GameMain(void)
 {
-	//ã‚¹ãƒ†ãƒ¼ã‚¸ç”»åƒè¡¨ç¤º
+	//ƒXƒe[ƒW‰æ‘œ•\¦
 	DrawGraph(0, 0, StageImage, FALSE);
 }
 
 
 int LoadImages()
 {
-	//ã‚¿ã‚¤ãƒˆãƒ«
+	//ƒ^ƒCƒgƒ‹
 	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
-	//ã‚¹ãƒ†ãƒ¼ã‚¸
+	//ƒXƒe[ƒW
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
-	//ãƒ–ãƒ­ãƒƒã‚¯ç”»åƒ
+	//ƒuƒƒbƒN‰æ‘œ
 	//if (LoadDivGraph("images/AnimalShogi/1Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
