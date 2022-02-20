@@ -165,9 +165,9 @@ void GameMain(void)
 int LoadImages()
 {
 	//タイトル
-	if ((TitleImage = LoadGraph("images/AnimalShogi/Title.jpg")) == -1)   return -1;
+	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
 	//ステージ
-	if ((StageImage = LoadGraph("images/AnimalShogi/Stage.jpg")) == -1)   return -1;
+	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	//ブロック画像
 	//if (LoadDivGraph("images/AnimalShogi/1Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
