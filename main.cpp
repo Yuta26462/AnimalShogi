@@ -4,6 +4,8 @@
 #include "DxLib.h"
 #include<stdlib.h>
 
+#define PieceKinds 4 //駒の種類
+
 /***********************************************
  * 列挙体の宣言
  ***********************************************/
@@ -15,7 +17,11 @@ typedef enum GAME_MODE
 	GAME_MAIN,
 	GAME_CLEAR,
 	GAME_OVER,
-	END = 99
+	END = 99,
+	CHICK = 0,	//ヒヨコ(歩兵)
+	ELEPHA,		//ゾウ(飛車)
+	GIRAF,		//キリン(角行)
+	LION		//ライオン(王将)
 };
 
 /***********************************************
@@ -27,12 +33,16 @@ const int WIDTH = 12;
 /***********************************************
  * 構造体の宣言
  ***********************************************/
+
+//駒構造体の宣言
 typedef struct PieceStatus {
 	int x, y;		//駒の座標
 	int w, h;		//駒の大きさ
 	int images;		//駒の画像データ
 	int flg;		//駒の有無情報
-};
+}PieceSt;
+
+PieceSt Pieces[PieceKinds] = { CHICK,ELEPHA,GIRAF,LION };	//駒情報配列
 
 
 /***********************************************
