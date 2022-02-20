@@ -180,6 +180,7 @@ void GameMain(void)
 {
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
+	DrawGraph(100, 200, KomaImage[1], FALSE);
 }
 
 
@@ -190,5 +191,5 @@ int LoadImages()
 	//ステージ
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	//ブロック画像
-	//if (LoadDivGraph("images/AnimalShogi/1Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
+	if (LoadDivGraph("images/Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
