@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Users\miyag\OneDrive\ドキュメント\-KBC-\GitHub\AnimalShogi\main.cpp(19,2): warning C4091: 'typedef ': 変数が何も宣言されていないときは、'GAME_MODE' の左辺を無視します。
+C:\Users\miyag\OneDrive\ドキュメント\-KBC-\GitHub\AnimalShogi\main.cpp(173): warning C4715: 'LoadImages': 値を返さないコントロール パスがあります。
+  AnimalShogi.vcxproj -> C:\Users\miyag\OneDrive\ドキュメント\-KBC-\GitHub\AnimalShogi\Debug\AnimalShogi.exe
