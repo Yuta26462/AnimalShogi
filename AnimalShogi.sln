@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AnimalShogi", "AnimalShogi.vcxproj", "{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Debug|x64.ActiveCfg = Debug|x64
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Debug|x64.Build.0 = Debug|x64
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Debug|x86.ActiveCfg = Debug|Win32
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Debug|x86.Build.0 = Debug|Win32
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Release|x64.ActiveCfg = Release|x64
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Release|x64.Build.0 = Release|x64
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Release|x86.ActiveCfg = Release|Win32
+		{7AA8BA12-C9D6-488E-9A70-6ED7FFB7F821}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F30E3DA9-C824-4B8E-A48E-B7EDE4FFB597}
+	EndGlobalSection
+EndGlobal
