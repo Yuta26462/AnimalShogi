@@ -4,6 +4,7 @@
 #include "DxLib.h"
 #include<stdlib.h>
 
+
 #define PieceKinds 4 //駒の種類
 
 LPCSTR font_path = "Fonts/Cherrybomb/Cherrybomb.ttf";
@@ -63,6 +64,8 @@ int TitleImage;      //タイトル画像
 int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
 
+int Live2D_ModelHandle;
+
 /***********************************************
  * 関数のプロトタイプ宣言
  ***********************************************/
@@ -89,7 +92,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	SetMainWindowText("どうぶつしょうぎ");
 
 	//ウィンドウサイズ
-	SetGraphMode(600, 700, 32);
+	//SetGraphMode(600, 700, 32);
+	SetGraphMode(800, 700, 32);
 
 	//ウィンドウモードで起動
 	ChangeWindowMode(TRUE);
@@ -103,6 +107,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	ChangeFont("Cherry bomb", DX_CHARSET_DEFAULT);
 
+
+	// Live2D Cubism Core DLL の読み込み( 64bit アプリの場合と 32bit アプリの場合で読み込む dll を変更 )
+#ifdef _WIN64
+	Live2D_SetCubism4CoreDLLPath("dll/live2d/x86_64/Live2DCubismCore.dll");
+#else
+	Live2D_SetCubism4CoreDLLPath("dll/live2d/x86/Live2DCubismCore.dll");
+#endif
+
+
+
 	//DXライブラリの初期化処理
 	if (DxLib_Init() == -1)   return -1;
 
@@ -112,9 +126,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//画像読込み関数を呼び出し
 	if (LoadImages() == -1)   return -1;
 
+	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dモデル読み込み
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, 300, 10);		//Live2Dモデルの座標を設定
+	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);
+
 	// ゲームループ
 	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
 	{
+
+
 		// 入力キー取得
 		OldKey = NowKey;
 		NowKey = GetMouseInput();
@@ -123,11 +143,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		//マウスの位置を取得
 		GetMousePoint(&MouseX, &MouseY);
 
-		if (GetJoypadInputState(DX_INPUT_PAD1) & KEY_INPUT_PAUSE != 0) {
-			GamePause();
-		}
+
+		if (CheckHitKey(KEY_INPUT_Q) == 1) GamePause();			//Qキーでゲーム終了
+
+		if (GetWindowUserCloseFlag() != 0)	GameState = END;		//メインウィンドウの閉じるボタンを押したらゲーム終了
 
 		ClearDrawScreen();		// 画面の初期化
+
+		//	モーション再生が終了したらIdleモーションをランダム再生
+		if (Live2D_Model_IsMotionFinished(Live2D_ModelHandle) == TRUE) {
+			Live2D_Model_StartMotion(Live2D_ModelHandle, "Idle", GetRand(8));
+		}
+
+		Live2D_Model_Update(Live2D_ModelHandle, 1 / 100.0f);	//Live2Dモデル更新
+		Live2D_RenderBegin();	//Live2Dモデル描画開始準備
+
 
 		switch (GameState)
 		{
@@ -140,6 +170,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			break;
 		case GAME_MAIN:
 			GameMain();
+			break;
+		case GAME_END:
+			GameEnd();
 			break;
 		}
 		ScreenFlip();			//裏画面の内容を表画面に反映
@@ -154,6 +187,10 @@ void DrawGameTitle(void)
 {
 	//タイトル画像表示
 	DrawGraph(0, 0, TitleImage, FALSE);
+
+	DrawGraph(600, 0, StageImage, FALSE);
+
+	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
 
 	//DrawBox(160, 405, 460, 465, 0xffffff, TRUE);
 
@@ -200,6 +237,11 @@ void GameMain(void)
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
 	
+	DrawGraph(600, 0, StageImage, FALSE);
+
+	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
+	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
+
 	for (int i = 0; i < 3; i++) { 
 		DrawRotaGraph(120 + (i)*180, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
 		for (int i = 0; i < 3; i++)
@@ -209,13 +251,20 @@ void GameMain(void)
 	}
 	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
 
-
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
 		if (MouseX < 120 && MouseX > 20 && MouseY > 20 && MouseY < 150) {
 			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[9], TRUE, FALSE);
 		}
+
+		if (KeyFlg & MOUSE_INPUT_LEFT) {
+			if (MouseX < 800 && MouseX > 600 && MouseY > 35 && MouseY < 670) {
+				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap@Body", 0);
+			}
+		}
 	}
-	
+
+	DrawFormatString(70, 25, 0x000000, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
+
 }
 
 
@@ -234,13 +283,18 @@ void GameEnd(void) {
 	DrawFormatString(300, 300, 0x000000,"げーむしゅうりょう");
 
 	if(RemoveFontResourceEx(font_path, FR_PRIVATE, NULL)) {
+	} else {
+		MessageBox(NULL, "remove failure", "", MB_OK);
 	}
- else {
- MessageBox(NULL, "remove failure", "", MB_OK);
-	}
+	Live2D_RenderEnd();		//Live2D描画の終了
+	Live2D_DeleteModel(Live2D_ModelHandle);	//Live2Dモデル削除
+
 }
 
 void GamePause(void) {
 
 	DrawFormatString(300, 300, 0x000000, "ぽーず");
+
+	WaitTimer(1000);		//1000ms(1秒)待機
+	GameState = END;
 }
