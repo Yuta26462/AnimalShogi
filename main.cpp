@@ -6,6 +6,8 @@
 
 #define PieceKinds 4 //駒の種類
 
+LPCSTR font_path = "Fonts/Cherrybomb/Cherrybomb.ttf";
+
 /***********************************************
  * 列挙体の宣言
  ***********************************************/
@@ -67,6 +69,7 @@ int KomaImage[10];   //コマ画像
 void GameInit(void);		//ゲーム初期化処理
 void GameMain(void);		//ゲームメイン処理
 void DrawGameTitle(void);	//ゲームタイトル処理
+void GameEnd(void);
 
 void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
@@ -89,6 +92,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	//ウィンドウモードで起動
 	ChangeWindowMode(TRUE);
+
+	// フォント読み込み
+	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
+	}
+	else {
+		// フォント読込エラー処理
+		MessageBox(NULL, "フォント読込失敗", "", MB_OK);
+	}
+	ChangeFont("Cherry bomb", DX_CHARSET_DEFAULT);
 
 	//DXライブラリの初期化処理
 	if (DxLib_Init() == -1)   return -1;
@@ -203,4 +215,15 @@ int LoadImages()
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	//ブロック画像
 	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
+}
+
+void GameEnd(void) {
+
+	DrawFormatString(300, 300, 0x000000,"げーむしゅうりょう");
+
+	if(RemoveFontResourceEx(font_path, FR_PRIVATE, NULL)) {
+	}
+ else {
+ MessageBox(NULL, "remove failure", "", MB_OK);
+	}
 }
