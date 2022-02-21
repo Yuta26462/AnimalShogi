@@ -182,7 +182,7 @@ void GameMain(void)
 {
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
-	DrawGraph(100, 200, KomaImage[1], FALSE);
+	DrawGraph(100, 200, KomaImage[1], TRUE);
 }
 
 
