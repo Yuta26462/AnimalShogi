@@ -73,6 +73,8 @@ void StageInit(void);	    //ステージ初期処理
 
 int LoadImages(void);      //画像読込み
 
+
+
 /***********************************************
  * プログラムの開始
  ***********************************************/
@@ -191,5 +193,5 @@ int LoadImages()
 	//ステージ
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	//ブロック画像
-	if (LoadDivGraph("images/Koma.gif", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
+	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
