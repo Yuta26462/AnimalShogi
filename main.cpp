@@ -68,6 +68,7 @@ int KomaImage[10];   //コマ画像
  ***********************************************/
 void GameInit(void);		//ゲーム初期化処理
 void GameMain(void);		//ゲームメイン処理
+void GamePause(void);
 void DrawGameTitle(void);	//ゲームタイトル処理
 void GameEnd(void);
 
@@ -121,6 +122,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		//マウスの位置を取得
 		GetMousePoint(&MouseX, &MouseY);
+
+		if (GetJoypadInputState(DX_INPUT_PAD1) & KEY_INPUT_PAUSE != 0) {
+			GamePause();
+		}
 
 		ClearDrawScreen();		// 画面の初期化
 
@@ -203,6 +208,13 @@ void GameMain(void)
 			DrawRotaGraph(120 + (i) * 180, 420, 1.8, 0, KomaImage[i + 6], TRUE, FALSE);
 	}
 	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
+
+
+	if (KeyFlg & MOUSE_INPUT_LEFT) {
+		if (MouseX < 120 && MouseX > 20 && MouseY < 20 && MouseY > 150) {
+			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[1], TRUE, FALSE);
+		}
+	}
 	
 }
 
@@ -216,7 +228,7 @@ int LoadImages()
 	//ブロック画像
 	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
-
+	
 void GameEnd(void) {
 
 	DrawFormatString(300, 300, 0x000000,"げーむしゅうりょう");
@@ -226,4 +238,9 @@ void GameEnd(void) {
  else {
  MessageBox(NULL, "remove failure", "", MB_OK);
 	}
+}
+
+void GamePause(void) {
+
+	DrawFormatString(300, 300, 0x000000, "ぽーず");
 }
