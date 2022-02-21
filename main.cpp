@@ -182,7 +182,16 @@ void GameMain(void)
 {
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
-	DrawGraph(100, 200, KomaImage[1], TRUE);
+	
+	for (int i = 0; i < 3; i++) { 
+		DrawRotaGraph(120 + (i)*180, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
+		for (int i = 0; i < 3; i++)
+			DrawRotaGraph(120 + (i) * 180, 270, 1.8, 0, KomaImage[i+3], TRUE, FALSE);
+		for (int i = 0; i < 3; i++)
+			DrawRotaGraph(120 + (i) * 180, 420, 1.8, 0, KomaImage[i + 6], TRUE, FALSE);
+	}
+	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
+	
 }
 
 
