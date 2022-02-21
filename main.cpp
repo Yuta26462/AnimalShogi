@@ -211,8 +211,8 @@ void GameMain(void)
 
 
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
-		if (MouseX < 120 && MouseX > 20 && MouseY < 20 && MouseY > 150) {
-			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[1], TRUE, FALSE);
+		if (MouseX < 120 && MouseX > 20 && MouseY > 20 && MouseY < 150) {
+			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[9], TRUE, FALSE);
 		}
 	}
 	
