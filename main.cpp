@@ -152,10 +152,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		//	モーション再生が終了したらIdleモーションをランダム再生
 		if (Live2D_Model_IsMotionFinished(Live2D_ModelHandle) == TRUE) {
-			Live2D_Model_StartMotion(Live2D_ModelHandle, "Idle", GetRand(8));
+			Live2D_Model_StartMotion(Live2D_ModelHandle, "Idle", GetRand(3));
 		}
 
-		Live2D_Model_Update(Live2D_ModelHandle, 1 / 100.0f);	//Live2Dモデル更新
+		Live2D_Model_Update(Live2D_ModelHandle, 1 / 300.0f);	//Live2Dモデル更新
 		Live2D_RenderBegin();	//Live2Dモデル描画開始準備
 
 
@@ -258,7 +258,7 @@ void GameMain(void)
 
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
 			if (MouseX < 800 && MouseX > 600 && MouseY > 35 && MouseY < 670) {
-				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap@Body", 0);
+				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
 			}
 		}
 	}

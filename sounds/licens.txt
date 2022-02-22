@@ -1,0 +1,8 @@
+・魔王魂 効果音 システム44
+ KomaClick
+
+・魔王魂 効果音 システム41
+ KomaNaru
+
+・魔王魂 効果音 システム46
+ StartClick
