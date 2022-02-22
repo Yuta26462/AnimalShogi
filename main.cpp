@@ -217,6 +217,32 @@ void DrawGameTitle(void)
 
 void GameInit(void)
 {
+	//‹î‚Ì‰Šú‰»
+	for (int i = 0; i < PieceKinds; i++)
+	{
+		switch (i)
+		{
+		case 0:
+			Pieces[i].x = 300;
+			Pieces[i].y = 560;
+			break;
+		case 1:
+			Pieces[i].x = 120;
+			Pieces[i].y = 560;
+			break;
+		case 2:
+			Pieces[i].x = 480;
+			Pieces[i].y = 560;
+			break;
+		case 3:
+			Pieces[i].x = 300;
+			Pieces[i].y = 420;
+			break;
+		}
+		Pieces[i].images = KomaImage[i];
+		Pieces[i].flg = 1;
+	}
+
 	//ƒQ[ƒ€ƒƒCƒ“ˆ—‚Ö
 	GameState = GAME_MAIN;
 }
@@ -242,13 +268,17 @@ void GameMain(void)
 	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dƒ‚ƒfƒ‹•`‰æ
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
 
-	for (int i = 0; i < 3; i++) { 
+	for (int i = 0; i < 4; i++) {
+		DrawRotaGraph(Pieces[i].x, Pieces[i].y, 1.8, 0, Pieces[i].images, TRUE, FALSE);
+	}
+
+	/*for (int i = 0; i < 3; i++) { 
 		DrawRotaGraph(120 + (i)*180, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
 		for (int i = 0; i < 3; i++)
 			DrawRotaGraph(120 + (i) * 180, 270, 1.8, 0, KomaImage[i+3], TRUE, FALSE);
 		for (int i = 0; i < 3; i++)
 			DrawRotaGraph(120 + (i) * 180, 420, 1.8, 0, KomaImage[i + 6], TRUE, FALSE);
-	}
+	}*/
 	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
 
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
