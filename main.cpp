@@ -91,12 +91,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//タイトルを設定
 	SetMainWindowText("どうぶつしょうぎ");
 
-	//ウィンドウサイズ
-	//SetGraphMode(600, 700, 32);
-	SetGraphMode(800, 700, 32);
-
 	//ウィンドウモードで起動
 	ChangeWindowMode(TRUE);
+
+	//ウィンドウサイズ
+	//SetGraphMode(600, 700, 32);
+	SetGraphMode(800, 700, 32);		//描画する最大ウィンドウサイズを設定
+	SetWindowSizeChangeEnableFlag(FALSE, FALSE);	//手動で変更、FitScreenをオフにする。
+	SetWindowSize(600, 700);	//ウィンドウサイズを変更
+
 
 	// フォント読み込み
 	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
@@ -185,6 +188,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 void DrawGameTitle(void)
 {
+
 	//タイトル画像表示
 	DrawGraph(0, 0, TitleImage, FALSE);
 
@@ -260,6 +264,8 @@ void StageInit(void)
 
 void GameMain(void)
 {
+	SetWindowSize(800, 700);	//ウィンドウサイズの変更
+
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
 	
