@@ -6,3 +6,25 @@
 
 ・魔王魂 効果音 システム46
  StartClick
+
+・MusMus-BGM-134
+ TitleBGM
+https://musmus.main.jp/music_game.html#google_vignette
+
+・MusMus-BGM-115
+TitleBGM01
+
+・MusMus-BGM-103
+TitleBGM02
+
+・MusMus-BGM-080
+TitleBGM03
+
+・MusMus-BGM-069
+TitleBGM04
+
+・MusMus-BGM-052
+TitleBGM05
+
+・MusMus-BGM-045
+TitleBGM06

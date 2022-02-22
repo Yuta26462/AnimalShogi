@@ -66,6 +66,11 @@ int KomaImage[10];   //コマ画像
 
 int Live2D_ModelHandle;
 
+//サウンド
+int KomaClick, KomaNaru, StartClick;
+//BGM
+int TitleBGM, TitleBGM01, TitleBGM02, TitleBGM03, TitleBGM04, TitleBGM05, TitleBGM06;
+
 /***********************************************
  * 関数のプロトタイプ宣言
  ***********************************************/
@@ -79,6 +84,7 @@ void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
 
 int LoadImages(void);      //画像読込み
+int LoadSounds(void);
 
 
 
@@ -126,8 +132,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//描画先画面を裏にする
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	//画像読込み関数を呼び出し
-	if (LoadImages() == -1)   return -1;
+	
+	if (LoadImages() == -1)   return -1;	//画像読込み関数を呼び出し
+	if (LoadSounds() == -1)   return -1;	//音声読み込み	
 
 	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dモデル読み込み
 	Live2D_Model_SetTranslate(Live2D_ModelHandle, 300, 10);		//Live2Dモデルの座標を設定
@@ -192,9 +199,10 @@ void DrawGameTitle(void)
 	//タイトル画像表示
 	DrawGraph(0, 0, TitleImage, FALSE);
 
-	DrawGraph(600, 0, StageImage, FALSE);
+	PlaySoundMem(TitleBGM, DX_PLAYTYPE_LOOP);
 
-	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
+	//DrawGraph(600, 0, StageImage, FALSE);			//Live2D用背景
+	//Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
 
 	//DrawBox(160, 405, 460, 465, 0xffffff, TRUE);
 
@@ -214,6 +222,7 @@ void DrawGameTitle(void)
 	{
 		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
 		{
+			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = GAME_INIT;   //ゲームスタート
 		}
 	}
@@ -269,10 +278,12 @@ void GameMain(void)
 	//ステージ画像表示
 	DrawGraph(0, 0, StageImage, FALSE);
 	
-	DrawGraph(600, 0, StageImage, FALSE);
+	DrawGraph(600, 0, StageImage, FALSE);		//Live2D用背景
 
 	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
+
+	PlaySoundMem(TitleBGM01, DX_PLAYTYPE_LOOP);
 
 	for (int i = 0; i < 4; i++) {
 		DrawRotaGraph(Pieces[i].x, Pieces[i].y, 1.8, 0, Pieces[i].images, TRUE, FALSE);
@@ -290,11 +301,13 @@ void GameMain(void)
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
 		if (MouseX < 120 && MouseX > 20 && MouseY > 20 && MouseY < 150) {
 			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[9], TRUE, FALSE);
+			PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 		}
 
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
 			if (MouseX < 800 && MouseX > 600 && MouseY > 35 && MouseY < 670) {
 				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
 			}
 		}
 	}
@@ -333,4 +346,18 @@ void GamePause(void) {
 
 	WaitTimer(1000);		//1000ms(1秒)待機
 	GameState = END;
+}
+
+
+int LoadSounds(void) {
+
+	if ((KomaClick = LoadSoundMem("sounds/KomaClick.mp3")) == -1)return -1;
+	if ((KomaNaru = LoadSoundMem("sounds/KomaNaru.mp3")) == -1)return -1;
+	if ((StartClick = LoadSoundMem("sounds/StartClick.mp3")) == -1)return -1;
+	if ((TitleBGM = LoadSoundMem("sounds/BGM/TitleBGM.mp3")) == -1)return -1;
+	if ((TitleBGM01 = LoadSoundMem("sounds/BGM/TitleBGM01.mp3")) == -1)return -1;
+	if ((TitleBGM02 = LoadSoundMem("sounds/BGM/TitleBGM02.mp3")) == -1)return -1;
+	if ((TitleBGM03 = LoadSoundMem("sounds/BGM/TitleBGM03.mp3")) == -1)return -1;
+	if ((TitleBGM04 = LoadSoundMem("sounds/BGM/TitleBGM04.mp3")) == -1)return -1;
+	if ((TitleBGM05 = LoadSoundMem("sounds/BGM/TitleBGM05.mp3")) == -1)return -1;
 }
