@@ -199,7 +199,7 @@ void DrawGameTitle(void)
 	//ƒ^ƒCƒgƒ‹‰æ‘œ•\Ž¦
 	DrawGraph(0, 0, TitleImage, FALSE);
 
-	PlaySoundMem(TitleBGM, DX_PLAYTYPE_LOOP);
+	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
 
 	//DrawGraph(600, 0, StageImage, FALSE);			//Live2D—p”wŒi
 	//Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dƒ‚ƒfƒ‹•`‰æ
@@ -283,7 +283,7 @@ void GameMain(void)
 	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dƒ‚ƒfƒ‹•`‰æ
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
 
-	PlaySoundMem(TitleBGM01, DX_PLAYTYPE_LOOP);
+	if(CheckSoundMem(TitleBGM01) == 0) PlaySoundMem(TitleBGM01, DX_PLAYTYPE_BACK);
 
 	for (int i = 0; i < 4; i++) {
 		DrawRotaGraph(Pieces[i].x, Pieces[i].y, 1.8, 0, Pieces[i].images, TRUE, FALSE);
@@ -360,4 +360,8 @@ int LoadSounds(void) {
 	if ((TitleBGM03 = LoadSoundMem("sounds/BGM/TitleBGM03.mp3")) == -1)return -1;
 	if ((TitleBGM04 = LoadSoundMem("sounds/BGM/TitleBGM04.mp3")) == -1)return -1;
 	if ((TitleBGM05 = LoadSoundMem("sounds/BGM/TitleBGM05.mp3")) == -1)return -1;
+
+
+	ChangeVolumeSoundMem(150, TitleBGM);
+	ChangeVolumeSoundMem(150, TitleBGM01);
 }
