@@ -103,6 +103,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//タイトルを設定
 	SetMainWindowText("どうぶつしょうぎ");
 
+	SetWindowIconID(01);	//アイコンを設定
+
 	//ウィンドウモードで起動
 	ChangeWindowMode(TRUE);
 
