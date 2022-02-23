@@ -3,6 +3,7 @@
 *******************************/
 #include "DxLib.h"
 #include<stdlib.h>
+#include <string.h>		//読み込まなくても文字列操作関数使えるが念の為
 
 
 #define PieceKinds 4 //駒の種類
@@ -59,12 +60,15 @@ int	MouseY;		//マウスY座標
 int	GameState = GAME_TITLE;   //ゲームモード
 
 int WaitTime = 0;    //	待ち時間
+int StartTime = GetNowCount();	//起動からの経過時間
 
-int TitleImage;      //タイトル画像
+int TitleImage,Live2DStage;      //タイトル画像
 int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
 
-int Live2D_ModelHandle;
+int Live2D_ModelHandle, Live2D_ModelHandle2;
+int ContentsFont;	//ISendMessege用フォント
+char ms[];	//文字列渡し用
 
 //サウンド
 int KomaClick, KomaNaru, StartClick;
@@ -84,8 +88,10 @@ void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
 
 int LoadImages(void);      //画像読込み
-int LoadSounds(void);
+int LoadSounds(void);	  //音声読み込み
 
+void ISendMessege(char* Contents, int partner = 0);
+void SideBar(void);
 
 
 /***********************************************
@@ -101,8 +107,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	ChangeWindowMode(TRUE);
 
 	//ウィンドウサイズ
-	//SetGraphMode(600, 700, 32);
-	SetGraphMode(800, 700, 32);		//描画する最大ウィンドウサイズを設定
+	//SetGraphMode(800, 700, 32);
+	SetGraphMode(1000, 700, 32);		//描画する最大ウィンドウサイズを設定
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);	//手動で変更、FitScreenをオフにする。
 	SetWindowSize(600, 700);	//ウィンドウサイズを変更
 
@@ -137,8 +143,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (LoadSounds() == -1)   return -1;	//音声読み込み	
 
 	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dモデル読み込み
-	Live2D_Model_SetTranslate(Live2D_ModelHandle, 300, 10);		//Live2Dモデルの座標を設定
-	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);
+	Live2D_ModelHandle2 = Live2D_LoadModel("dll/21miku_street/21miku_street.model3.json");	//Live2Dモデル読み込み
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, 400, -50);		//Live2Dモデルの座標を設定
+	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dモデルの座標を設定
+	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);		//Live2Dモデルの大きさを設定
+	Live2D_Model_SetExtendRate(Live2D_ModelHandle2, 2.0f, 2.0f);	//Live2Dモデルの大きさを設定
+	ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_CHARSET_DEFAULT);	//ContentsFontフォントデータを作成
 
 	// ゲームループ
 	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
@@ -164,8 +174,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		if (Live2D_Model_IsMotionFinished(Live2D_ModelHandle) == TRUE) {
 			Live2D_Model_StartMotion(Live2D_ModelHandle, "Idle", GetRand(3));
 		}
+		if (Live2D_Model_IsMotionFinished(Live2D_ModelHandle2) == TRUE) {
+			Live2D_Model_StartMotion(Live2D_ModelHandle2, "Idle", GetRand(4));
+		}
 
-		Live2D_Model_Update(Live2D_ModelHandle, 1 / 300.0f);	//Live2Dモデル更新
+		Live2D_Model_Update(Live2D_ModelHandle, 1 / 200.0f);	//Live2Dモデル更新
+		Live2D_Model_Update(Live2D_ModelHandle2, 1 / 200.0f);	//Live2Dモデル更新
 		Live2D_RenderBegin();	//Live2Dモデル描画開始準備
 
 
@@ -222,6 +236,7 @@ void DrawGameTitle(void)
 	{
 		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
 		{
+			StopSoundMem(TitleBGM);
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = GAME_INIT;   //ゲームスタート
 		}
@@ -236,19 +251,19 @@ void GameInit(void)
 		switch (i)
 		{
 		case 0:
-			Pieces[i].x = 300;
+			Pieces[i].x = 500;
 			Pieces[i].y = 560;
 			break;
 		case 1:
-			Pieces[i].x = 120;
+			Pieces[i].x = 320;
 			Pieces[i].y = 560;
 			break;
 		case 2:
-			Pieces[i].x = 480;
+			Pieces[i].x = 680;
 			Pieces[i].y = 560;
 			break;
 		case 3:
-			Pieces[i].x = 300;
+			Pieces[i].x = 500;
 			Pieces[i].y = 420;
 			break;
 		}
@@ -273,15 +288,12 @@ void StageInit(void)
 
 void GameMain(void)
 {
-	SetWindowSize(800, 700);	//ウィンドウサイズの変更
+	SetWindowSize(1000, 700);	//ウィンドウサイズの変更
 
 	//ステージ画像表示
-	DrawGraph(0, 0, StageImage, FALSE);
-	
-	DrawGraph(600, 0, StageImage, FALSE);		//Live2D用背景
+	DrawGraph(200, 0, StageImage, FALSE);
 
-	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
-	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
+	SideBar();
 
 	if(CheckSoundMem(TitleBGM01) == 0) PlaySoundMem(TitleBGM01, DX_PLAYTYPE_BACK);
 
@@ -299,20 +311,20 @@ void GameMain(void)
 	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
 
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
-		if (MouseX < 120 && MouseX > 20 && MouseY > 20 && MouseY < 150) {
-			DrawRotaGraph(120, 130, 1.8, 0, KomaImage[9], TRUE, FALSE);
-			PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-		}
-
-		if (KeyFlg & MOUSE_INPUT_LEFT) {
-			if (MouseX < 800 && MouseX > 600 && MouseY > 35 && MouseY < 670) {
-				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
-				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
+		if (MouseX < 405 && MouseX > 230 && MouseY > 55 && MouseY < 200) {
+			int i = GetRand(10);
+			StartTime = GetNowCount();
+			while (GetNowCount() - StartTime < 500)
+			{
+				DrawRotaGraph(315, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
+				if (ProcessMessage() == -1)break;
+				ScreenFlip();
 			}
+			PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 		}
 	}
 
-	DrawFormatString(70, 25, 0x000000, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
+	DrawFormatString(270, 25, 0x000000, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 }
 
@@ -323,13 +335,15 @@ int LoadImages()
 	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
 	//ステージ
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
+
+	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
 	//ブロック画像
 	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
 	
 void GameEnd(void) {
 
-	DrawFormatString(300, 300, 0x000000,"げーむしゅうりょう");
+	DrawFormatString(500, 300, 0x000000,"げーむしゅうりょう");
 
 	if(RemoveFontResourceEx(font_path, FR_PRIVATE, NULL)) {
 	} else {
@@ -337,12 +351,14 @@ void GameEnd(void) {
 	}
 	Live2D_RenderEnd();		//Live2D描画の終了
 	Live2D_DeleteModel(Live2D_ModelHandle);	//Live2Dモデル削除
+	Live2D_DeleteModel(Live2D_ModelHandle2);	//Live2Dモデル削除
+	DeleteFontToHandle(ContentsFont);	//ContentsFontデータを削除
 
 }
 
 void GamePause(void) {
 
-	DrawFormatString(300, 300, 0x000000, "ぽーず");
+	DrawFormatString(500, 300, 0x000000, "ぽーず");
 
 	WaitTimer(1000);		//1000ms(1秒)待機
 	GameState = END;
@@ -362,6 +378,89 @@ int LoadSounds(void) {
 	if ((TitleBGM05 = LoadSoundMem("sounds/BGM/TitleBGM05.mp3")) == -1)return -1;
 
 
-	ChangeVolumeSoundMem(150, TitleBGM);
-	ChangeVolumeSoundMem(150, TitleBGM01);
+	ChangeVolumeSoundMem(200, TitleBGM);
+	ChangeVolumeSoundMem(200, TitleBGM01);
 }
+
+
+void SideBar(void) {
+
+	DrawGraph(0, 0, Live2DStage, FALSE);		//Live2D用背景
+	DrawGraph(800, 0, Live2DStage, FALSE);		//Live2D用背景
+
+	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
+	Live2D_Model_Draw(Live2D_ModelHandle2);		//Live2Dモデル描画
+	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
+
+	// マウス左クリック判定
+	if (KeyFlg & MOUSE_INPUT_LEFT) {
+		if (MouseX < 1000 && MouseX > 800 && MouseY > 20 && MouseY < 700) {
+			Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+			PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
+		}
+
+		if (MouseX < 220 && MouseX > 0 && MouseY > 20 && MouseY < 700) {
+			Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
+			PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
+		}
+
+		if (MouseX < 195 && MouseX > 10 && MouseY > 590 && MouseY < 670) {
+			GameState = GAME_TITLE;
+			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+			StopSoundMem(TitleBGM01);
+			SetWindowSize(600, 700);
+		}
+	}
+
+	// ステータス・メニュー描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
+	DrawBox(5, 360, 200, 690, 0xd2b48c, TRUE);
+	DrawBox(4, 360, 199, 690, 0x000000, FALSE);
+	DrawBox(800, 360, 990, 690, 0xd2b48c, TRUE);
+	DrawBox(799, 360, 989, 690, 0x000000, FALSE);
+
+	// タイトルボタン
+	DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
+	DrawBox(9, 590, 194, 670, 0x000000, FALSE);
+	DrawFormatString(15, 610, 0x000000, "たいとる");
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//// 吹き出し描画
+	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
+	//DrawOval(105, 265, 100, 80, 0x000000, FALSE);
+	//DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
+	//
+	//DrawOval(895, 265, 100, 80, 0x000000, FALSE);
+	//DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	//ISendMessageテスト表示	
+	char ms[] = "てすとです。";
+	ISendMessege(ms);
+	strcpy_s(ms, "しょうご");
+	ISendMessege(ms, 1);
+}
+
+void ISendMessege(char* Contents, int partner) {
+
+		switch (partner) {
+
+		case 0:
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+			DrawOval(105, 265, 100, 80, 0x000000, FALSE);
+			DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
+			DrawFormatStringToHandle(40, 260, 0x000000, ContentsFont, Contents);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
+
+		case 1:
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+			DrawOval(895, 265, 100, 80, 0x000000, FALSE);
+			DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
+			DrawFormatStringToHandle(830, 260, 0x000000, ContentsFont, Contents);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
+
+		}
+	}
