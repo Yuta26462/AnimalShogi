@@ -310,11 +310,14 @@ void StageInit(void)
 			if (i == 0 || (i == 1 && j == 1) || i == 3 || (i == 2 && j == 1)) {
 				Stage[i][j] = 1;
 			}
-			Stage[i][j] = 0;
+			else
+			{
+				Stage[i][j] = 0;
+			}
+			
 		}
 	}
-	Stage[1][1] = 1;
-	Stage[2][0] = 1;
+	
 }
 
 
@@ -592,9 +595,20 @@ void MoveGiraf(void)
 	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 320) / XMARGIN] == 0) {
 		DrawCircle(Komas[GIRAF].x, Komas[GIRAF].y - YMARGIN, 30, 0x000000, TRUE);
 	}
-	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 140) / XMARGIN] == 0) {
+	if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN] == 0) {
 		DrawCircle(Komas[GIRAF].x + XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
 	}
+	if (Komas[GIRAF].x > 320) {
+		if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN - 2] == 0) {
+			DrawCircle(Komas[GIRAF].x - XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
+		}
+	}
+	if (Komas[GIRAF].y < 560) {
+		if (Stage[Komas[GIRAF].y -280 / YMARGIN + 2][(Komas[GIRAF].x - 320) / XMARGIN - 2] == 0)
+			DrawCircle(Komas[GIRAF].x, Komas[GIRAF].y + YMARGIN, 30, 0x000000, TRUE);
+	}
+	
+
 	
 }
 
