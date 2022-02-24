@@ -3,7 +3,7 @@
 *******************************/
 #include "DxLib.h"
 #include<stdlib.h>
-#include <string.h>		//読み込まなくても文字列操作関数使えるが念の為
+
 
 
 #define KomaKinds 4 //駒の種類
@@ -67,6 +67,8 @@ int Status = 0;		//ステージのステータス
 
 int Stage[Sizey][Sizex];		//ステージ配列
 
+int Handrand;		//先手・後手判別用乱数
+
 int WaitTime = 0;    //	待ち時間
 int StartTime = GetNowCount();	//起動からの経過時間
 
@@ -77,7 +79,7 @@ int Flame, Button;//UI画像
 
 int Live2D_ModelHandle, Live2D_ModelHandle2;
 int ContentsFont;	//ISendMessege用フォント
-char ms[];	//文字列渡し用
+int MenuFont;		//メニュー用フォント
 
 //サウンド
 int KomaClick, KomaNaru, StartClick;
@@ -106,8 +108,8 @@ void MoveLion(void);		//ライオンの移動処理
 int LoadImages(void);      //画像読込み
 int LoadSounds(void);	  //音声読み込み
 
-void ISendMessege(char* Contents, int partner = 0);
-void SideBar(void);
+void ISendMessege(const TCHAR* Contents, int partner = 0);		//メッセージ表示
+void SideBar(void);		//サイドメニュー表示
 
 
 /***********************************************
@@ -166,7 +168,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dモデルの座標を設定
 	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);		//Live2Dモデルの大きさを設定
 	Live2D_Model_SetExtendRate(Live2D_ModelHandle2, 2.0f, 2.0f);	//Live2Dモデルの大きさを設定
-	ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_CHARSET_DEFAULT);	//ContentsFontフォントデータを作成
+	ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_CHARSET_DEFAULT);	//ContentsFontフォントデータ(メッセージ用)を作成
+	MenuFont = CreateFontToHandle("Cherry bomb", 45, 2, DX_CHARSET_DEFAULT);	//ContentsFontフォントデータ(メッセージ用)を作成
 
 	// ゲームループ
 	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
@@ -233,10 +236,6 @@ void DrawGameTitle(void)
 
 	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
 
-	//DrawGraph(600, 0, StageImage, FALSE);			//Live2D用背景
-	//Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
-
-	//DrawBox(160, 405, 460, 465, 0xffffff, TRUE);
 
 	//文字の表示(点滅)
 	if (++WaitTime < 50)
@@ -257,6 +256,7 @@ void DrawGameTitle(void)
 			StopSoundMem(TitleBGM);
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = GAME_INIT;   //ゲームスタート
+			Handrand = GetRand(1);		//先手・後手決定
 		}
 	}
 }
@@ -345,6 +345,7 @@ void GameMain(void)
 	}*/
 	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
 
+
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
 		if (MouseX < 405 && MouseX > 230 && MouseY > 55 && MouseY < 200) {
 			int i = GetRand(10);
@@ -377,7 +378,7 @@ void GameMain(void)
 		break;
 	}
 
-	DrawFormatString(270, 25, 0x000000, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
+	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 }
 
@@ -461,7 +462,7 @@ void SideBar(void) {
 			PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
 		}
 
-		if (MouseX < 195 && MouseX > 10 && MouseY > 590 && MouseY < 670) {
+		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン
 			GameState = GAME_TITLE;
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			StopSoundMem(TitleBGM01);
@@ -478,10 +479,10 @@ void SideBar(void) {
 	DrawBox(799, 360, 989, 690, 0x000000, FALSE);
 
 	// タイトルボタン
-	DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
-	DrawBox(9, 590, 194, 670, 0x000000, FALSE);
-	DrawRotaGraph(105, 630, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatString(15, 610, 0x000000, "たいとる");
+	//DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
+	//DrawBox(9, 590, 194, 670, 0x000000, FALSE);
+	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "たいとる");
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -495,34 +496,38 @@ void SideBar(void) {
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//ISendMessageテスト表示	
-	char ms[] = "てすとです。";
-	ISendMessege(ms);
-	strcpy_s(ms, "しょうご");
-	ISendMessege(ms, 1);
+	char Hand[2][7] = { "せんて","ごて" };
+	
+	ISendMessege(Hand[Handrand]);
+	ISendMessege(Hand[1 - Handrand], 1);
+	//ISendMessege("てすとです。");
+	//ISendMessege("しょうご", 1);
 }
 
-void ISendMessege(char* Contents, int partner) {
+void ISendMessege(const TCHAR* Contents, int partner) {
 
+	int DrawWidth = GetDrawStringWidth(Contents, strlen(Contents));
+	switch (partner) {
 
-		switch (partner) {
+	case 0:
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawOval(105, 265, 100, 80, 0x000000, FALSE);
+		DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
+		DrawFormatStringToHandle(30 + (200 - DrawWidth) / 2, 260, 0x000000, ContentsFont, Contents);
+		//DrawFormatStringToHandle(60, 260, 0x000000, ContentsFont, Contents);
+		// DrawFormatString(60, 260, 0x000000, "%d", DrawWidth);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		break;
 
-		case 0:
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-			DrawOval(105, 265, 100, 80, 0x000000, FALSE);
-			DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
-			DrawFormatStringToHandle(40, 260, 0x000000, ContentsFont, Contents);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-			break;
-
-		case 1:
-			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-			DrawOval(895, 265, 100, 80, 0x000000, FALSE);
-			DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
-			DrawFormatStringToHandle(830, 260, 0x000000, ContentsFont, Contents);
-			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-			break;
-
-		}
+	case 1:
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawOval(895, 265, 100, 80, 0x000000, FALSE);
+		DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
+		//DrawFormatStringToHandle(850, 260, 0x000000, ContentsFont, Contents);
+		DrawFormatStringToHandle(820 + (200 - DrawWidth) / 2, 260, 0x000000, ContentsFont, Contents);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		break;
+	}
 }
 
 void SelectKomas(void)
