@@ -6,7 +6,11 @@
 #include <string.h>		//読み込まなくても文字列操作関数使えるが念の為
 
 
-#define PieceKinds 4 //駒の種類
+#define KomaKinds 4 //駒の種類
+#define Sizex 3
+#define Sizey 4
+#define XMARGIN 180
+#define YMARGIN 140
 
 LPCSTR font_path = "Fonts/Cherrybomb/Cherrybomb.ttf";
 
@@ -39,14 +43,14 @@ const int WIDTH = 12;
  ***********************************************/
 
 //駒構造体の宣言
-typedef struct PieceStatus {
+typedef struct KomaStatus {
 	int x, y;		//駒の座標
 	int w, h;		//駒の大きさ
 	int images;		//駒の画像データ
 	int flg;		//駒の有無情報
-}PieceSt;
+}KomaSt;
 
-PieceSt Pieces[PieceKinds] = { CHICK,ELEPHA,GIRAF,LION };	//駒情報配列
+KomaSt Komas[KomaKinds] = { CHICK,ELEPHA,GIRAF,LION };	//駒情報配列
 
 
 /***********************************************
@@ -61,6 +65,7 @@ int	GameState = GAME_TITLE;   //ゲームモード
 
 int Status = 0;		//ステージのステータス
 
+int Stage[Sizey][Sizex];		//ステージ配列
 
 int WaitTime = 0;    //	待ち時間
 int StartTime = GetNowCount();	//起動からの経過時間
@@ -90,7 +95,7 @@ void GameEnd(void);
 void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
 
-void SelectPieces(void);	//駒の選択
+void SelectKomas(void);	//駒の選択
 void MoveChick(void);		//ヒヨコの移動処理
 void MoveGiraf(void);		//キリンの移動処理
 void MoveElepha(void);		//ゾウの移動処理
@@ -258,30 +263,32 @@ void DrawGameTitle(void)
 void GameInit(void)
 {
 	//駒の初期化
-	for (int i = 0; i < PieceKinds; i++)
+	for (int i = 0; i < KomaKinds; i++)
 	{
 		switch (i)
 		{
 		case 0:
-			Pieces[i].x = 500;
-			Pieces[i].y = 560;
+			Komas[i].x = 500;
+			Komas[i].y = 560;
 			break;
 		case 1:
-			Pieces[i].x = 320;
-			Pieces[i].y = 560;
+			Komas[i].x = 320;
+			Komas[i].y = 560;
 			break;
 		case 2:
-			Pieces[i].x = 680;
-			Pieces[i].y = 560;
+			Komas[i].x = 680;
+			Komas[i].y = 560;
 			break;
 		case 3:
-			Pieces[i].x = 500;
-			Pieces[i].y = 420;
+			Komas[i].x = 500;
+			Komas[i].y = 420;
 			break;
 		}
-		Pieces[i].images = KomaImage[i];
-		Pieces[i].flg = 1;
+		Komas[i].images = KomaImage[i];
+		Komas[i].flg = 1;
 	}
+
+	StageInit();		//ステージの初期化
 
 	//ゲームメイン処理へ
 	GameState = GAME_MAIN;
@@ -294,7 +301,19 @@ void DrawStage(void)
 
 void StageInit(void)
 {
-
+	//ステージ配列の初期化
+	for (int i = 0; i < Sizey; i++)
+	{
+		for (int j = 0; j < Sizex; j++)
+		{
+			if (i == 0 || (i == 1 && j == 1) || i == 3 || (i == 2 && j == 1)) {
+				Stage[i][j] = 1;
+			}
+			Stage[i][j] = 0;
+		}
+	}
+	Stage[1][1] = 1;
+	Stage[2][0] = 1;
 }
 
 
@@ -310,7 +329,7 @@ void GameMain(void)
 	if(CheckSoundMem(TitleBGM01) == 0) PlaySoundMem(TitleBGM01, DX_PLAYTYPE_BACK);
 
 	for (int i = 0; i < 4; i++) {
-		DrawRotaGraph(Pieces[i].x, Pieces[i].y, 1.8, 0, Pieces[i].images, TRUE, FALSE);
+		DrawRotaGraph(Komas[i].x, Komas[i].y, 1.8, 0, Komas[i].images, TRUE, FALSE);
 	}
 
 	/*for (int i = 0; i < 3; i++) { 
@@ -336,9 +355,18 @@ void GameMain(void)
 		}
 	}
 
+	for (int i = 0; i < Sizey; i++)
+	{
+		for (int j = 0; j < Sizex; j++)
+		{
+			DrawFormatString(j*100, i*150, 0xffffff, "%4d", Stage[i][j]);
+		}
+	}
+	
+
 	switch (Status) {
 	case 0:
-		SelectPieces();		//駒選択
+		SelectKomas();		//駒選択
 		break;
 	case 1:
 
@@ -486,7 +514,7 @@ void ISendMessege(char* Contents, int partner) {
 		}
 	}
 
-void SelectPieces(void)
+void SelectKomas(void)
 {
 	static int ClickFlag = 0;
 
@@ -506,20 +534,20 @@ void SelectPieces(void)
 	//}
 
 	if (KeyFlg & MOUSE_INPUT_LEFT /*& Stage[SelectX / 300][SelectY / 140]*/) {
-		if (MouseX > Pieces[CHICK].x - 70 && MouseX<Pieces[CHICK].x + 70 && MouseY>Pieces[CHICK].y - 70 && MouseY < Pieces[CHICK].y + 70) {
+		if (MouseX > Komas[CHICK].x - 70 && MouseX<Komas[CHICK].x + 70 && MouseY>Komas[CHICK].y - 70 && MouseY < Komas[CHICK].y + 70) {
 
 			ClickFlag = 1;
 			/*DrawString(Pieces[CHICK].x, Pieces[CHICK].y - 140,"test", 0x000000, TRUE);*/
 		}
-		else if (MouseX > Pieces[GIRAF].x - 70 && MouseX<Pieces[GIRAF].x + 70 && MouseY>Pieces[GIRAF].y - 70 && MouseY < Pieces[GIRAF].y + 70) {
+		else if (MouseX > Komas[GIRAF].x - 70 && MouseX<Komas[GIRAF].x + 70 && MouseY>Komas[GIRAF].y - 70 && MouseY < Komas[GIRAF].y + 70) {
 
 			ClickFlag = 2;
 		}
-		else if (MouseX > Pieces[ELEPHA].x - 70 && MouseX<Pieces[ELEPHA].x + 70 && MouseY>Pieces[ELEPHA].y - 70 && MouseY < Pieces[ELEPHA].y + 70) {
+		else if (MouseX > Komas[ELEPHA].x - 70 && MouseX<Komas[ELEPHA].x + 70 && MouseY>Komas[ELEPHA].y - 70 && MouseY < Komas[ELEPHA].y + 70) {
 
 			ClickFlag = 3;
 		}
-		else if (MouseX > Pieces[LION].x - 70 && MouseX<Pieces[LION].x + 70 && MouseY>Pieces[LION].y - 70 && MouseY < Pieces[LION].y + 70) {
+		else if (MouseX > Komas[LION].x - 70 && MouseX<Komas[LION].x + 70 && MouseY>Komas[LION].y - 70 && MouseY < Komas[LION].y + 70) {
 
 			ClickFlag = 4;
 		}
@@ -545,21 +573,29 @@ void SelectPieces(void)
 
 void MoveChick(void)
 {
-	DrawCircle(Pieces[CHICK].x, Pieces[CHICK].y - 140, 30, 0x000000, TRUE);
+	if (Stage[(Komas[CHICK].y - 280) / YMARGIN][(Komas[CHICK].x - 320) / XMARGIN] == 0) {
+		DrawCircle(Komas[CHICK].x, Komas[CHICK].y - YMARGIN, 30, 0x000000, TRUE);
+	}
 
 }
 
 void MoveGiraf(void)
 {
-	DrawCircle(Pieces[GIRAF].x, Pieces[GIRAF].y - 140, 30, 0x000000, TRUE);
+	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 320) / XMARGIN] == 0) {
+		DrawCircle(Komas[GIRAF].x, Komas[GIRAF].y - YMARGIN, 30, 0x000000, TRUE);
+	}
+	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 140) / XMARGIN] == 0) {
+		DrawCircle(Komas[GIRAF].x + XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
+	}
+	
 }
 
 void MoveElepha(void)
 {
-	DrawCircle(Pieces[ELEPHA].x, Pieces[ELEPHA].y - 140, 30, 0x000000, TRUE);
+	DrawCircle(Komas[ELEPHA].x, Komas[ELEPHA].y - 140, 30, 0x000000, TRUE);
 }
 
 void MoveLion(void)
 {
-	DrawCircle(Pieces[LION].x, Pieces[LION].y - 140, 30, 0x000000, TRUE);
+	DrawCircle(Komas[LION].x, Komas[LION].y - 140, 30, 0x000000, TRUE);
 }
