@@ -73,6 +73,7 @@ int StartTime = GetNowCount();	//起動からの経過時間
 int TitleImage,Live2DStage;      //タイトル画像
 int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
+int Flame, Button;//UI画像
 
 int Live2D_ModelHandle, Live2D_ModelHandle2;
 int ContentsFont;	//ISendMessege用フォント
@@ -386,6 +387,10 @@ int LoadImages()
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 
 	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
+
+	if ((Flame = LoadGraph("images/Flame.png")) == -1)   return -1;
+	if ((Button = LoadGraph("images/Button.png")) == -1)   return -1;
+
 	//ブロック画像
 	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
@@ -463,14 +468,16 @@ void SideBar(void) {
 
 	// ステータス・メニュー描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
-	DrawBox(5, 360, 200, 690, 0xd2b48c, TRUE);
-	DrawBox(4, 360, 199, 690, 0x000000, FALSE);
+	//DrawBox(5, 360, 200, 690, 0xd2b48c, TRUE);
+	//DrawBox(4, 360, 199, 690, 0x000000, FALSE);
+	DrawRotaGraph(96, 505, 2.0f, 0, Flame, TRUE, FALSE);
 	DrawBox(800, 360, 990, 690, 0xd2b48c, TRUE);
 	DrawBox(799, 360, 989, 690, 0x000000, FALSE);
 
 	// タイトルボタン
-	DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
-	DrawBox(9, 590, 194, 670, 0x000000, FALSE);
+	//DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
+	//DrawBox(9, 590, 194, 670, 0x000000, FALSE);
+	DrawRotaGraph(105, 630, 0.7f, 0, Button, TRUE, FALSE);
 	DrawFormatString(15, 610, 0x000000, "たいとる");
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -493,6 +500,7 @@ void SideBar(void) {
 
 void ISendMessege(char* Contents, int partner) {
 
+
 		switch (partner) {
 
 		case 0:
@@ -512,7 +520,7 @@ void ISendMessege(char* Contents, int partner) {
 			break;
 
 		}
-	}
+}
 
 void SelectKomas(void)
 {
