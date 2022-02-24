@@ -22,10 +22,10 @@ typedef enum GAME_MODE
 	GAME_CLEAR,
 	GAME_OVER,
 	END = 99,
-	CHICK = 0,	//ヒヨコ(歩兵)
-	ELEPHA,		//ゾウ(飛車)
+	LION = 0,	//ライオン(王将)
 	GIRAF,		//キリン(角行)
-	LION		//ライオン(王将)
+	ELEPHA,		//ゾウ(飛車)
+	CHICK		//ヒヨコ(歩兵
 };
 
 /***********************************************
@@ -59,6 +59,9 @@ int	MouseX;		//マウスX座標
 int	MouseY;		//マウスY座標
 int	GameState = GAME_TITLE;   //ゲームモード
 
+int Status = 0;		//ステージのステータス
+
+
 int WaitTime = 0;    //	待ち時間
 int StartTime = GetNowCount();	//起動からの経過時間
 
@@ -86,6 +89,13 @@ void GameEnd(void);
 
 void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
+
+void SelectPieces(void);	//駒の選択
+void MoveChick(void);		//ヒヨコの移動処理
+void MoveGiraf(void);		//キリンの移動処理
+void MoveElepha(void);		//ゾウの移動処理
+void MoveLion(void);		//ライオンの移動処理
+
 
 int LoadImages(void);      //画像読込み
 int LoadSounds(void);	  //音声読み込み
@@ -326,6 +336,15 @@ void GameMain(void)
 		}
 	}
 
+	switch (Status) {
+	case 0:
+		SelectPieces();		//駒選択
+		break;
+	case 1:
+
+		break;
+	}
+
 	DrawFormatString(270, 25, 0x000000, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 }
@@ -466,3 +485,60 @@ void ISendMessege(char* Contents, int partner) {
 
 		}
 	}
+
+void SelectPieces(void)
+{
+	static int ClickFlag = 0;
+
+	/*int SelectX = MouseX/180;
+	int SelectY = MouseY/140;*/
+
+	//if (KeyFlg & MOUSE_INPUT_LEFT) {
+	//	if (ClickFlag == 0) {
+	//		ClickFlag = 1;
+
+	//	}
+	//	//Status = 1;
+	//}
+	//if (ClickFlag==1)
+	//{
+	//	DrawString(Pieces[CHICK].x, Pieces[CHICK].y - 140, "test", 0x000000, TRUE);
+	//}
+
+	if (KeyFlg & MOUSE_INPUT_LEFT /*& Stage[SelectX / 300][SelectY / 140]*/) {
+		if (MouseX > Pieces[CHICK].x - 70 && MouseX<Pieces[CHICK].x + 70 && MouseY>Pieces[CHICK].y - 70 && MouseY < Pieces[CHICK].y + 70) {
+
+			ClickFlag = 1;
+			/*DrawString(Pieces[CHICK].x, Pieces[CHICK].y - 140,"test", 0x000000, TRUE);*/
+		}
+		else if (MouseX > Pieces[GIRAF].x - 70 && MouseX<Pieces[GIRAF].x + 70 && MouseY>Pieces[GIRAF].y - 70 && MouseY < Pieces[GIRAF].y + 70) {
+
+			ClickFlag = 2;
+		}
+		else if (MouseX > Pieces[ELEPHA].x - 70 && MouseX<Pieces[ELEPHA].x + 70 && MouseY>Pieces[ELEPHA].y - 70 && MouseY < Pieces[ELEPHA].y + 70) {
+
+			ClickFlag = 3;
+		}
+		else if (MouseX > Pieces[LION].x - 70 && MouseX<Pieces[LION].x + 70 && MouseY>Pieces[LION].y - 70 && MouseY < Pieces[LION].y + 70) {
+
+			ClickFlag = 4;
+		}
+	}
+
+	switch (ClickFlag)
+	{
+	case 1:
+		MoveChick();
+		break;
+	case 2:
+		MoveGiraf();
+		break;
+	case 3:
+		MoveElepha();
+		break;
+	case 4:
+		MoveLion();
+		break;
+	}
+
+}
