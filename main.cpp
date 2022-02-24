@@ -542,3 +542,24 @@ void SelectPieces(void)
 	}
 
 }
+
+void MoveChick(void)
+{
+	DrawCircle(Pieces[CHICK].x, Pieces[CHICK].y - 140, 30, 0x000000, TRUE);
+
+}
+
+void MoveGiraf(void)
+{
+	DrawCircle(Pieces[GIRAF].x, Pieces[GIRAF].y - 140, 30, 0x000000, TRUE);
+}
+
+void MoveElepha(void)
+{
+	DrawCircle(Pieces[ELEPHA].x, Pieces[ELEPHA].y - 140, 30, 0x000000, TRUE);
+}
+
+void MoveLion(void)
+{
+	DrawCircle(Pieces[LION].x, Pieces[LION].y - 140, 30, 0x000000, TRUE);
+}
