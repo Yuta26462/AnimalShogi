@@ -6,7 +6,7 @@
 
 
 
-#define KomaKinds 4 //駒の種類
+#define KomaKinds 10 //駒の種類
 #define Sizex 3		//盤面(横)
 #define Sizey 4		//盤面(縦)
 #define XMARGIN 180	//駒と駒の間隔(横)
@@ -28,10 +28,18 @@ typedef enum GAME_MODE
 	GAME_CLEAR,
 	GAME_OVER,
 	END = 99,
+	//1P
 	LION = 0,	//ライオン(王将)
 	GIRAF,		//キリン(角行)
 	ELEPHA,		//ゾウ(飛車)
-	CHICK		//ヒヨコ(歩兵
+	CHICK,		//ヒヨコ(歩兵)
+	CHICKEN,	//ニワトリ(と金)
+	//2P
+	ELION,		
+	EGIRAF,		
+	EELEPHA,
+	ECHICK,
+	ECHICKEN
 };
 
 /***********************************************
@@ -52,7 +60,7 @@ typedef struct KomaStatus {
 	int flg;		//駒の有無情報
 }KomaSt;
 
-KomaSt Komas[KomaKinds] = { CHICK,ELEPHA,GIRAF,LION };	//駒情報配列
+KomaSt Komas[KomaKinds];	//駒情報配列
 
 
 /***********************************************
@@ -107,6 +115,7 @@ void MoveChick(void);		//ヒヨコの移動処理
 void MoveGiraf(void);		//キリンの移動処理
 void MoveElepha(void);		//ゾウの移動処理
 void MoveLion(void);		//ライオンの移動処理
+void ChangeTurn(void);		//自分、相手ターン変更処理
 
 
 int LoadImages(void);      //画像読込み
@@ -286,7 +295,23 @@ void GameInit(void)
 			break;
 		case 3:
 			Komas[i].x = 500;
+			Komas[i].y = 420;
+			break;
+		case 5:
+			Komas[i].x = 500;
 			Komas[i].y = 140;
+			break;
+		case 6:
+			Komas[i].x = 680;
+			Komas[i].y = 140;
+			break;
+		case 7:
+			Komas[i].x = 320;
+			Komas[i].y = 140;
+			break;
+		case 8:
+			Komas[i].x = 500;
+			Komas[i].y = 280;
 			break;
 		}
 		Komas[i].images = KomaImage[i];
@@ -311,7 +336,7 @@ void StageInit(void)
 	{
 		for (int j = 0; j < Sizex; j++)
 		{
-			if (/*i == 0 || (i == 1 && j == 1) ||*/ i == 3 || (i == 2 && j == 1)) {
+			if (i == 0 || (i == 1 && j == 1) || i == 3 || (i == 2 && j == 1)) {
 				Stage[i][j] = 1;
 			}
 			else
@@ -321,8 +346,6 @@ void StageInit(void)
 			
 		}
 	}
-	Stage[2][1] = 0;
-	
 }
 
 
@@ -337,7 +360,10 @@ void GameMain(void)
 
 	if(CheckSoundMem(TitleBGM01) == 0) PlaySoundMem(TitleBGM01, DX_PLAYTYPE_BACK);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < KomaKinds; i++) {
+		if (i == 4 || i == 9) {
+			continue;			//ニワトリは描画しない
+		}
 		DrawRotaGraph(Komas[i].x, Komas[i].y, 1.8, 0, Komas[i].images, TRUE, FALSE);
 	}
 
@@ -885,4 +911,10 @@ void MoveLion(void)
 			}
 		}
 	}
+}
+
+void ChangeTurn(void)
+{
+	Mflag = 1;
+	Cflag = 0;
 }
