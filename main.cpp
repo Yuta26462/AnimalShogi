@@ -90,6 +90,8 @@ int KomaImage[10];   //コマ画像
 int Flame, Button;//UI画像
 
 int Live2D_ModelHandle, Live2D_ModelHandle2;
+int mscount;		//ISendMessage用カウント
+bool msdis;			//ISendMessage用表示・非表示フラグ
 int ContentsFont;	//ISendMessege用フォント
 int MenuFont;		//メニュー用フォント
 
@@ -320,6 +322,9 @@ void GameInit(void)
 
 	StageInit();		//ステージの初期化
 
+	mscount = 0;
+	msdis = false;
+
 	//ゲームメイン処理へ
 	GameState = GAME_MAIN;
 }
@@ -536,30 +541,33 @@ void SideBar(void) {
 }
 
 void ISendMessege(const TCHAR* Contents, int partner) {
+	msdis = true;
+	if (msdis == true && mscount++ < 360) {
+		int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
 
-	int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
-	
-	switch (partner) {
+		switch (partner) {
 
-	case 0:
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-		DrawOval(105, 265, 100, 80, 0x000000, FALSE);
-		DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
-		DrawFormatStringToHandle(((10 + ((200 - 10) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
-		//DrawFormatStringToHandle(60, 260, 0x000000, ContentsFont, Contents);
-		// DrawFormatString(60, 260, 0x000000, "%d", DrawWidth);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		break;
+		case 0:
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+			DrawOval(105, 265, 100, 80, 0x000000, FALSE);
+			DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
+			DrawFormatStringToHandle(((10 + ((200 - 10) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
+			//DrawFormatStringToHandle(60, 260, 0x000000, ContentsFont, Contents);
+			//DrawFormatString(60, 260, 0x000000, "%d", mscount);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
 
-	case 1:
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-		DrawOval(895, 265, 100, 80, 0x000000, FALSE);
-		DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
-		//DrawFormatStringToHandle(850, 260, 0x000000, ContentsFont, Contents);
-		DrawFormatStringToHandle(((800 + ((990 - 800) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		break;
+		case 1:
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+			DrawOval(895, 265, 100, 80, 0x000000, FALSE);
+			DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
+			//DrawFormatStringToHandle(850, 260, 0x000000, ContentsFont, Contents);
+			DrawFormatStringToHandle(((800 + ((990 - 800) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+			break;
+		}
 	}
+	if (mscount == 360) { msdis = false; mscount = 0;  }
 }
 
 void SelectKomas(void)
