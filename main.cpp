@@ -6,11 +6,13 @@
 
 
 
-#define KomaKinds 4 //駒の種類
-#define Sizex 3
-#define Sizey 4
-#define XMARGIN 180
-#define YMARGIN 140
+#define KomaKinds 10 //駒の種類
+#define Sizex 3		//盤面(横)
+#define Sizey 4		//盤面(縦)
+#define XMARGIN 180	//駒と駒の間隔(横)
+#define HXMARGIN 90	//駒とマスの間隔(横)
+#define YMARGIN 140	//駒と駒の間隔(縦)
+#define HYMARGIN 70	//駒とマスの間隔(縦)
 
 LPCSTR font_path = "Fonts/Cherrybomb/Cherrybomb.ttf";
 
@@ -26,10 +28,18 @@ typedef enum GAME_MODE
 	GAME_CLEAR,
 	GAME_OVER,
 	END = 99,
+	//1P
 	LION = 0,	//ライオン(王将)
 	GIRAF,		//キリン(角行)
 	ELEPHA,		//ゾウ(飛車)
-	CHICK		//ヒヨコ(歩兵
+	CHICK,		//ヒヨコ(歩兵)
+	CHICKEN,	//ニワトリ(と金)
+	//2P
+	ELION,		
+	EGIRAF,		
+	EELEPHA,
+	ECHICK,
+	ECHICKEN
 };
 
 /***********************************************
@@ -50,7 +60,7 @@ typedef struct KomaStatus {
 	int flg;		//駒の有無情報
 }KomaSt;
 
-KomaSt Komas[KomaKinds] = { CHICK,ELEPHA,GIRAF,LION };	//駒情報配列
+KomaSt Komas[KomaKinds];	//駒情報配列
 
 
 /***********************************************
@@ -64,6 +74,8 @@ int	MouseY;		//マウスY座標
 int	GameState = GAME_TITLE;   //ゲームモード
 
 int Status = 0;		//ステージのステータス
+static int Mflag = 0;		//移動可能マークフラグ
+static int Cflag = 0;		//駒クリックフラグ
 
 int Stage[Sizey][Sizex];		//ステージ配列
 
@@ -103,6 +115,7 @@ void MoveChick(void);		//ヒヨコの移動処理
 void MoveGiraf(void);		//キリンの移動処理
 void MoveElepha(void);		//ゾウの移動処理
 void MoveLion(void);		//ライオンの移動処理
+void ChangeTurn(void);		//自分、相手ターン変更処理
 
 
 int LoadImages(void);      //画像読込み
@@ -284,6 +297,22 @@ void GameInit(void)
 			Komas[i].x = 500;
 			Komas[i].y = 420;
 			break;
+		case 5:
+			Komas[i].x = 500;
+			Komas[i].y = 140;
+			break;
+		case 6:
+			Komas[i].x = 680;
+			Komas[i].y = 140;
+			break;
+		case 7:
+			Komas[i].x = 320;
+			Komas[i].y = 140;
+			break;
+		case 8:
+			Komas[i].x = 500;
+			Komas[i].y = 280;
+			break;
 		}
 		Komas[i].images = KomaImage[i];
 		Komas[i].flg = 1;
@@ -317,7 +346,6 @@ void StageInit(void)
 			
 		}
 	}
-	
 }
 
 
@@ -332,7 +360,10 @@ void GameMain(void)
 
 	if(CheckSoundMem(TitleBGM01) == 0) PlaySoundMem(TitleBGM01, DX_PLAYTYPE_BACK);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < KomaKinds; i++) {
+		if (i == 4 || i == 9) {
+			continue;			//ニワトリは描画しない
+		}
 		DrawRotaGraph(Komas[i].x, Komas[i].y, 1.8, 0, Komas[i].images, TRUE, FALSE);
 	}
 
@@ -590,40 +621,301 @@ void SelectKomas(void)
 
 void MoveChick(void)
 {
-	if (Stage[(Komas[CHICK].y - 280) / YMARGIN][(Komas[CHICK].x - 320) / XMARGIN] == 0) {
-		DrawCircle(Komas[CHICK].x, Komas[CHICK].y - YMARGIN, 30, 0x000000, TRUE);
-	}
+	//static int Mflag = 0;		//移動可能マーク
+	//static int Cflag = 0;				
 
+	//他の駒がなければ移動可能マークを描画
+	//↑
+	if (Stage[(Komas[CHICK].y - 280) / YMARGIN][(Komas[CHICK].x - 320) / XMARGIN] == 0 
+		&& Mflag == 0 && Komas[CHICK].y > 140) {
+		DrawCircle(Komas[CHICK].x, Komas[CHICK].y - YMARGIN, 30, 0x000000, TRUE);
+		Cflag = 1;
+	}
+	//移動可能マークをクリックしたとき移動
+	//↑
+	if (KeyFlg & KEY_INPUT_LEFT && Cflag == 1) {
+		if (MouseX > Komas[CHICK].x - HXMARGIN && MouseX<Komas[CHICK].x + HXMARGIN && MouseY>Komas[CHICK].y - (YMARGIN + HYMARGIN) && MouseY < Komas[CHICK].y - HYMARGIN) {
+			Komas[CHICK].y -= YMARGIN;
+			Mflag = 1;
+			Cflag = 0;
+		}
+	}
 }
 
 void MoveGiraf(void)
 {
-	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 320) / XMARGIN] == 0) {
+	//他の駒がなければ移動可能マークを描画
+		//↑
+	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN][(Komas[GIRAF].x - 320) / XMARGIN] == 0 
+		&& Mflag == 0 && Komas[GIRAF].y > 140) {
 		DrawCircle(Komas[GIRAF].x, Komas[GIRAF].y - YMARGIN, 30, 0x000000, TRUE);
-	}
-	if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN] == 0) {
-		DrawCircle(Komas[GIRAF].x + XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
-	}
-	if (Komas[GIRAF].x > 320) {
-		if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN - 2] == 0) {
-			DrawCircle(Komas[GIRAF].x - XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
 		}
-	}
-	if (Komas[GIRAF].y < 560) {
-		if (Stage[Komas[GIRAF].y -280 / YMARGIN + 2][(Komas[GIRAF].x - 320) / XMARGIN - 2] == 0)
+	}	//→
+	if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN] == 0 
+		&& Mflag == 0 && Komas[GIRAF].x < 680) {
+		DrawCircle(Komas[GIRAF].x + XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
+		}
+	}	//←
+	if (Stage[Komas[GIRAF].y / YMARGIN - 1][(Komas[GIRAF].x - 140) / XMARGIN - 2] == 0
+		&& Mflag == 0 && Komas[GIRAF].x > 320) {
+			DrawCircle(Komas[GIRAF].x - XMARGIN, Komas[GIRAF].y, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+	}	//↓
+	if (Stage[(Komas[GIRAF].y - 280) / YMARGIN + 2][(Komas[GIRAF].x - 320) / XMARGIN - 2] == 0
+		&& Mflag == 0 && Komas[GIRAF].y < 560) {
 			DrawCircle(Komas[GIRAF].x, Komas[GIRAF].y + YMARGIN, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
 	}
 	
 
+	//移動可能マークをクリックしたとき移動
+	if (KeyFlg & KEY_INPUT_LEFT && Cflag == 1) {
+			//上下
+		if (MouseX > Komas[GIRAF].x - HXMARGIN && MouseX < Komas[GIRAF].x + HXMARGIN) {
+			//↑
+			if (MouseY > Komas[GIRAF].y - (YMARGIN + HYMARGIN) && MouseY < Komas[GIRAF].y - HYMARGIN) {
+				Komas[GIRAF].y -= YMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}//↓
+			else if (MouseY > Komas[GIRAF].y + HYMARGIN && MouseY < Komas[GIRAF].y + (YMARGIN + HYMARGIN)) {
+				Komas[GIRAF].y += YMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}	//左右
+		else if (MouseY > Komas[GIRAF].y - HYMARGIN && MouseY < Komas[GIRAF].y + HYMARGIN) {
+			//←
+			if (MouseX > Komas[GIRAF].x - (XMARGIN + HXMARGIN) && MouseX < Komas[GIRAF].x - HXMARGIN) {
+				Komas[GIRAF].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}//→
+			else if (MouseX > Komas[GIRAF].x + HXMARGIN && MouseX < Komas[GIRAF].x + (XMARGIN + HXMARGIN)) {
+				Komas[GIRAF].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+	}
 	
 }
 
+//角行の移動処理
 void MoveElepha(void)
 {
-	DrawCircle(Komas[ELEPHA].x, Komas[ELEPHA].y - 140, 30, 0x000000, TRUE);
+	//他の駒がなければ移動可能マークを描画
+	if (Komas[ELEPHA].y > 140) {
+			//左上
+		if (Stage[(Komas[ELEPHA].y - 280) / YMARGIN][(Komas[ELEPHA].x - 140) / XMARGIN - 2] == 0
+			&& Mflag == 0 && Komas[ELEPHA].x > 320) {
+			DrawCircle(Komas[ELEPHA].x - 180, Komas[ELEPHA].y - 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}	//右下
+		if (Stage[(Komas[ELEPHA].y - 280) / YMARGIN][(Komas[ELEPHA].x - 140) / XMARGIN] == 0
+			&& Mflag == 0 && Komas[ELEPHA].x < 680) {
+			DrawCircle(Komas[ELEPHA].x + 180, Komas[ELEPHA].y - 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}
+	}
+	if (Komas[ELEPHA].y < 560) {
+			//左下
+		if (Stage[(Komas[ELEPHA].y - 280) / YMARGIN + 2][(Komas[GIRAF].x - 140) / XMARGIN - 2] == 0
+			&& Mflag == 0 && Komas[ELEPHA].x > 320) {
+			DrawCircle(Komas[ELEPHA].x - 180, Komas[ELEPHA].y + 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}	//右下
+		if (Stage[(Komas[ELEPHA].y - 280) / YMARGIN + 2][(Komas[ELEPHA].x - 140) / XMARGIN] == 0
+			&& Mflag && Komas[ELEPHA].x < 680 && Komas[ELEPHA].y < 560) {
+			DrawCircle(Komas[ELEPHA].x + 180, Komas[ELEPHA].y + 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}
+	}
+
+	//移動可能マークをクリックしたと移動
+	if (KeyFlg & KEY_INPUT_LEFT && Cflag == 1) {
+		if (MouseY < Komas[ELEPHA].y - HYMARGIN && MouseY > Komas[ELEPHA].y - (YMARGIN + HYMARGIN)) {
+				//左上
+			if (MouseX > Komas[ELEPHA].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA].x - HXMARGIN) {
+				Komas[ELEPHA].y -= YMARGIN;
+				Komas[ELEPHA].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}	//右上
+			else if (MouseX > Komas[ELEPHA].x + HXMARGIN && MouseX < Komas[ELEPHA].x + (XMARGIN + HXMARGIN)) {
+				Komas[ELEPHA].y -= YMARGIN;
+				Komas[ELEPHA].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+		else if (MouseY > Komas[ELEPHA].y + HYMARGIN && MouseY < Komas[ELEPHA].y + (YMARGIN + HYMARGIN)) {
+				//左下
+			if (MouseX > Komas[ELEPHA].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA].x - HXMARGIN) {
+				Komas[ELEPHA].y += YMARGIN;
+				Komas[ELEPHA].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}	//右下
+			else if (MouseX > Komas[ELEPHA].x + HXMARGIN && MouseX < Komas[ELEPHA].x + (XMARGIN + HXMARGIN)) {
+				Komas[ELEPHA].y += YMARGIN;
+				Komas[ELEPHA].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+	}
 }
 
 void MoveLion(void)
 {
-	DrawCircle(Komas[LION].x, Komas[LION].y - 140, 30, 0x000000, TRUE);
+	//他の駒がなければ移動可能マークを描画
+		//↑
+	if (Stage[(Komas[LION].y - 280) / YMARGIN][(Komas[LION].x - 320) / XMARGIN] == 0
+		&& Mflag == 0 && Komas[LION].y > 140) {
+		DrawCircle(Komas[LION].x, Komas[LION].y - YMARGIN, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
+		}
+	}	//→
+	if (Stage[Komas[LION].y / YMARGIN - 1][(Komas[LION].x - 140) / XMARGIN] == 0
+		&& Mflag == 0 && Komas[LION].x < 680) {
+		DrawCircle(Komas[LION].x + XMARGIN, Komas[LION].y, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
+		}
+	}	//←
+	if (Stage[Komas[LION].y / YMARGIN - 1][(Komas[LION].x - 140) / XMARGIN - 2] == 0
+		&& Mflag == 0 && Komas[LION].x > 320) {
+		DrawCircle(Komas[LION].x - XMARGIN, Komas[LION].y, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
+		}
+	}	//↓
+	if (Stage[(Komas[LION].y - 280) / YMARGIN + 2][(Komas[LION].x - 320) / XMARGIN - 2] == 0
+		&& Mflag == 0 && Komas[LION].y < 560) {
+		DrawCircle(Komas[LION].x, Komas[LION].y + YMARGIN, 30, 0x000000, TRUE);
+		if (Cflag == 0) {
+			Cflag = 1;
+		}
+	}
+	if (Komas[LION].y > 140) {
+		//左上
+		if (Stage[(Komas[LION].y - 280) / YMARGIN][(Komas[LION].x - 140) / XMARGIN - 2] == 0
+			&& Mflag == 0 && Komas[LION].x > 320) {
+			DrawCircle(Komas[LION].x - 180, Komas[LION].y - 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}	//右↑
+		if (Stage[(Komas[LION].y - 280) / YMARGIN][(Komas[LION].x - 140) / XMARGIN] == 0
+			&& Mflag == 0 && Komas[LION].x < 680) {
+			DrawCircle(Komas[LION].x + 180, Komas[LION].y - 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}
+	}
+	if (Komas[LION].y < 560) {
+		//左下
+		if (Stage[(Komas[LION].y - 280) / YMARGIN + 2][(Komas[LION].x - 140) / XMARGIN - 2] == 0
+			&& Mflag == 0 && Komas[LION].x > 320) {
+			DrawCircle(Komas[LION].x - 180, Komas[LION].y + 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}	//右下
+		if (Stage[(Komas[LION].y - 280) / YMARGIN + 2][(Komas[LION].x - 140) / XMARGIN] == 0
+			&& Mflag && Komas[LION].x < 680 && Komas[LION].y < 560) {
+			DrawCircle(Komas[LION].x + 180, Komas[LION].y + 140, 30, 0x000000, TRUE);
+			if (Cflag == 0) {
+				Cflag = 1;
+			}
+		}
+	}
+
+	//移動可能マークをクリックしたとき移動
+	if (KeyFlg & KEY_INPUT_LEFT && Cflag == 1) {
+		//上下
+		if (MouseX > Komas[LION].x - HXMARGIN && MouseX < Komas[LION].x + HXMARGIN) {
+			//↑
+			if (MouseY > Komas[LION].y - (YMARGIN + HYMARGIN) && MouseY < Komas[LION].y - HYMARGIN) {
+				Komas[LION].y -= YMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}//↓
+			else if (MouseY > Komas[LION].y + HYMARGIN && MouseY < Komas[LION].y + (YMARGIN + HYMARGIN)) {
+				Komas[LION].y += YMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}	//左右
+		else if (MouseY > Komas[LION].y - HYMARGIN && MouseY < Komas[LION].y + HYMARGIN) {
+			//←
+			if (MouseX > Komas[LION].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION].x - HXMARGIN) {
+				Komas[LION].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}//→
+			else if (MouseX > Komas[LION].x + HXMARGIN && MouseX < Komas[LION].x + (XMARGIN + HXMARGIN)) {
+				Komas[LION].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+	}
+	if (KeyFlg & KEY_INPUT_LEFT && Cflag == 1) {
+		if (MouseY < Komas[LION].y - HYMARGIN && MouseY > Komas[LION].y - (YMARGIN + HYMARGIN)) {
+			//左上
+			if (MouseX > Komas[LION].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION].x - HXMARGIN) {
+				Komas[LION].y -= YMARGIN;
+				Komas[LION].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}	//右上
+			else if (MouseX > Komas[LION].x + HXMARGIN && MouseX < Komas[LION].x + (XMARGIN + HXMARGIN)) {
+				Komas[LION].y -= YMARGIN;
+				Komas[LION].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+		else if (MouseY > Komas[LION].y + HYMARGIN && MouseY < Komas[LION].y + (YMARGIN + HYMARGIN)) {
+			//左下
+			if (MouseX > Komas[LION].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION].x - HXMARGIN) {
+				Komas[LION].y += YMARGIN;
+				Komas[LION].x -= XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}	//右下
+			else if (MouseX > Komas[LION].x + HXMARGIN && MouseX < Komas[LION].x + (XMARGIN + HXMARGIN)) {
+				Komas[LION].y += YMARGIN;
+				Komas[LION].x += XMARGIN;
+				Mflag = 1;
+				Cflag = 0;
+			}
+		}
+	}
+}
+
+void ChangeTurn(void)
+{
+	Mflag = 1;
+	Cflag = 0;
 }
