@@ -506,14 +506,15 @@ void SideBar(void) {
 
 void ISendMessege(const TCHAR* Contents, int partner) {
 
-	int DrawWidth = GetDrawStringWidth(Contents, strlen(Contents));
+	int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
+	
 	switch (partner) {
 
 	case 0:
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 		DrawOval(105, 265, 100, 80, 0x000000, FALSE);
 		DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
-		DrawFormatStringToHandle(30 + (200 - DrawWidth) / 2, 260, 0x000000, ContentsFont, Contents);
+		DrawFormatStringToHandle(((10 + ((200 - 10) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
 		//DrawFormatStringToHandle(60, 260, 0x000000, ContentsFont, Contents);
 		// DrawFormatString(60, 260, 0x000000, "%d", DrawWidth);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -524,7 +525,7 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 		DrawOval(895, 265, 100, 80, 0x000000, FALSE);
 		DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
 		//DrawFormatStringToHandle(850, 260, 0x000000, ContentsFont, Contents);
-		DrawFormatStringToHandle(820 + (200 - DrawWidth) / 2, 260, 0x000000, ContentsFont, Contents);
+		DrawFormatStringToHandle(((800 + ((990 - 800) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		break;
 	}
