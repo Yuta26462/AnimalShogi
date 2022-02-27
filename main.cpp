@@ -58,6 +58,7 @@ typedef struct KomaStatus {
 	int w, h;		//駒の大きさ
 	int images;		//駒の画像データ
 	int flg;		//駒の有無情報
+	int pflg;		//駒のプレイヤー情報(1P:1,2P:2)
 }KomaSt;
 
 KomaSt Komas[KomaKinds];	//駒情報配列
@@ -231,7 +232,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		case GAME_INIT:
 			GameInit();
 			break;
-			break;
 		case GAME_MAIN:
 			GameMain();
 			break;
@@ -290,34 +290,42 @@ void GameInit(void)
 		case 0:
 			Komas[i].x = 500;
 			Komas[i].y = 560;
+			Komas[i].pflg = 1;
 			break;
 		case 1:
 			Komas[i].x = 320;
 			Komas[i].y = 560;
+			Komas[i].pflg = 1;
 			break;
 		case 2:
 			Komas[i].x = 680;
 			Komas[i].y = 560;
+			Komas[i].pflg = 1;
 			break;
 		case 3:
 			Komas[i].x = 500;
 			Komas[i].y = 420;
+			Komas[i].pflg = 1;
 			break;
 		case 5:
 			Komas[i].x = 500;
 			Komas[i].y = 140;
+			Komas[i].pflg = 2;
 			break;
 		case 6:
 			Komas[i].x = 680;
 			Komas[i].y = 140;
+			Komas[i].pflg = 2;
 			break;
 		case 7:
 			Komas[i].x = 320;
 			Komas[i].y = 140;
+			Komas[i].pflg = 2;
 			break;
 		case 8:
 			Komas[i].x = 500;
 			Komas[i].y = 280;
+			Komas[i].pflg = 2;
 			break;
 		}
 		Komas[i].images = KomaImage[i];
@@ -333,8 +341,8 @@ void GameInit(void)
 	//Cflag = 0;	//駒クリックフラグ
 	Mflag = 0;	//マーク表示フラグ
 	Status = 0;	//ステージの状況
-	Pflag = 1;
-	Branch = 0;
+	Pflag = 0;	//プレイヤーフラグ
+	Branch = 0;	//1Pと2Pの駒の切り替え用変数
 
 	//ゲームメイン処理へ
 	GameState = GAME_MAIN;
@@ -608,7 +616,10 @@ void SelectKomas(void)
 	//}
 	
 
-	if (Pflag == 2) {
+	if (Pflag == 0) {		//1Pのとき
+		Branch = 0;
+	}
+	else if (Pflag == 1) {	//2Pのとき
 		Branch = 5;
 	}
 
@@ -655,32 +666,35 @@ void MoveChick(void)
 	//static int Mflag = 0;		//移動可能マーク
 	//static int Cflag = 0;				
 
-	static int Sign = -1;		//符号用変数
+	int Sign;		//符号用変数
 
-	if (Pflag == 2) {			//2Pの場合1Pとは逆方向に表示する
+	if (Pflag == 0) {			//1Pの場合
 		Sign = 1;
+	}
+	else if (Pflag == 1) {		//2Pの場合
+		Sign = -1;
 	}
 
 	//他の駒がなければ移動可能マークを描画
 	//↑
-	if ((Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN + Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] == 0
-		|| Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] > 5)
-		/*&& Mflag == 0 */&& Komas[CHICK + Branch].y > 140) {
-		DrawCircle(Komas[CHICK + Branch].x, Komas[CHICK + Branch].y - YMARGIN, 30, 0x000000, TRUE);
+	if (/*(Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] == 0
+		|| Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] > 5)*/
+		/*&& Mflag == 0 *//*&&*/ Komas[CHICK + Branch].y > 140) {
+		DrawCircle(Komas[CHICK + Branch].x, Komas[CHICK + Branch].y - YMARGIN * Sign, 30, 0x000000, TRUE);
 		Mflag = 1;
 	}
 	//移動可能マークをクリックしたとき移動
 	//↑
 	if (KeyFlg & KEY_INPUT_LEFT && Mflag == 1) {
 		if (MouseX > Komas[CHICK + Branch].x - HXMARGIN && MouseX<Komas[CHICK + Branch].x + HXMARGIN
-			&& MouseY>Komas[CHICK + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[CHICK + Branch].y - HYMARGIN
+			&& MouseY>Komas[CHICK + Branch].y - (YMARGIN + HYMARGIN) * Sign && MouseY < Komas[CHICK + Branch].y - HYMARGIN * Sign
 			&& Komas[CHICK].y >140) {
-			if (Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] > 5) {
-				Komas[Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].flg = 0;
-			}
+			/*if (Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] > 5) {*/
+				Komas[Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].flg = 0;
+			//}
 			Stage[Komas[CHICK + Branch].y / YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 0;
-			Komas[CHICK + Branch].y -= YMARGIN;
-			Stage[Komas[CHICK + Branch].y/ YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 4;
+			Komas[CHICK + Branch].y -= YMARGIN * Sign;
+			Stage[Komas[CHICK + Branch].y/ YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 4 + Branch;
 
 			Status = 1;		//ターンチェンジ関数に移動
 		}
@@ -1041,7 +1055,9 @@ void MoveLion(void)
 
 void ChangeTurn(void)
 {
+	static int i = 1;
+
 	Mflag = 0;
-	Pflag = 2;
+	Pflag = i++ % 2;
 	Status = 0;
 }
