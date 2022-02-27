@@ -58,7 +58,7 @@ typedef struct KomaStatus {
 	int w, h;		//駒の大きさ
 	int images;		//駒の画像データ
 	int flg;		//駒の有無情報
-	int pflg;		//駒のプレイヤー情報(1P:0,2P:1)
+	int pflg;		//駒のプレイヤー情報(1P:1,2P:2)
 }KomaSt;
 
 KomaSt Komas[KomaKinds];	//駒情報配列
@@ -79,7 +79,7 @@ int Status;		//ステージのステータス
 static int ClickFlag;	//クリックフラグ(クリックした駒の識別)
 static int Mflag;		//移動可能マークフラグ
 //static int Cflag;		//駒クリックフラグ
-static int Pflag;		//プレイヤーフラグ 1P:0,2P;1
+static int Pflag;		//プレイヤーフラグ 1P:1,2P;2
 static int Branch;		//1Pと2Pの分岐用変数
 
 
@@ -302,42 +302,42 @@ void GameInit(void)
 		case 0:
 			Komas[i].x = 500;
 			Komas[i].y = 560;
-			Komas[i].pflg = 0;
+			Komas[i].pflg = 1;
 			break;
 		case 1:
 			Komas[i].x = 320;
 			Komas[i].y = 560;
-			Komas[i].pflg = 0;
+			Komas[i].pflg = 1;
 			break;
 		case 2:
 			Komas[i].x = 680;
 			Komas[i].y = 560;
-			Komas[i].pflg = 0;
+			Komas[i].pflg = 1;
 			break;
 		case 3:
 			Komas[i].x = 500;
 			Komas[i].y = 420;
-			Komas[i].pflg = 0;
+			Komas[i].pflg = 1;
 			break;
 		case 5:
 			Komas[i].x = 500;
 			Komas[i].y = 140;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 2;
 			break;
 		case 6:
 			Komas[i].x = 680;
 			Komas[i].y = 140;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 2;
 			break;
 		case 7:
 			Komas[i].x = 320;
 			Komas[i].y = 140;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 2;
 			break;
 		case 8:
 			Komas[i].x = 500;
 			Komas[i].y = 280;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 2;
 			break;
 		}
 		Komas[i].images = KomaImage[i];
@@ -354,7 +354,7 @@ void GameInit(void)
 	//Cflag = 0;	//駒クリックフラグ
 	Mflag = 0;	//マーク表示フラグ
 	Status = 0;	//ステージの状況
-	Pflag = 0;	//プレイヤーフラグ
+	Pflag = 1;	//プレイヤーフラグ
 	Branch = 0;	//1Pと2Pの駒の切り替え用変数
 
 	//ゲームメイン処理へ
@@ -443,6 +443,7 @@ void GameMain(void)
 			DrawFormatString(j*100, i*150, 0xffffff, "%4d", Stage[i][j]);
 		}
 	}
+	DrawFormatString(800, 50, 0x000000, "%3d", Pflag);
 	
 
 	switch (Status) {
@@ -644,10 +645,10 @@ void SelectKomas(void)
 	//}
 	
 
-	if (Pflag == 0) {		//1Pのとき
+	if (Pflag == 1) {		//1Pのとき
 		Branch = 0;
 	}
-	else if (Pflag == 1) {	//2Pのとき
+	else if (Pflag == 2) {	//2Pのとき
 		Branch = 5;
 	}
 
@@ -696,10 +697,10 @@ void MoveChick(void)
 
 	int Sign = 0;		//符号用変数
 
-	if (Pflag == 0) {			//1Pの場合
+	if (Pflag == 1) {			//1Pの場合
 		Sign = 1;
 	}
-	else if (Pflag == 1) {		//2Pの場合
+	else if (Pflag == 2) {		//2Pの場合
 		Sign = -1;
 	}
 
@@ -1107,7 +1108,12 @@ void ChangeTurn(void)
 	static int i = 1;
 
 	Mflag = 0;
-	Pflag = i++ % 2;
+	if (Pflag == 1) {
+		Pflag = 2;
+	}
+	else if (Pflag == 2) {
+		Pflag = 1;
+	}
 	Status = 0;
 }
 
