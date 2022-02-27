@@ -113,6 +113,7 @@ void GameInit(void);		//ゲーム初期化処理
 void GameMain(void);		//ゲームメイン処理
 void GamePause(void);
 void DrawGameTitle(void);	//ゲームタイトル処理
+void GameClear(void);		//ゲームクリア
 void GameEnd(void);
 
 void DrawStage(void);	    //ステージ
@@ -246,6 +247,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			break;
 		case GAME_MAIN:
 			GameMain();
+			break;
+		case GAME_CLEAR:
+			GameClear();
 			break;
 		case GAME_END:
 			GameEnd();
@@ -1162,4 +1166,44 @@ void SelectDisplay(int x, int y) {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 100);
 	DrawBox(x - 60, y - 60, x + 60, y + 60, 0xdc143c, TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+}
+
+void GameClear(void) {
+
+	if (Pause == true) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawBox(0, 0, 1000, 700, 0xfffacd, TRUE);
+		DrawFormatString(450, 185, 0xfffffff, "げーむくりあ");
+
+		// タイトルボタン
+		DrawRotaGraph(525, 400, 0.8f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(450, 380, 0x000000, MenuFont, "たいとる");
+
+		DrawRotaGraph(525, 500, 0.8f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(470, 480, 0x000000, MenuFont, "おわる");
+
+
+		// マウス左クリック判定
+		if (KeyFlg & MOUSE_INPUT_LEFT) {
+			if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {	//タイトル画面ボタン
+				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+				StopSoundMem(TitleBGM01);
+				GameState = GAME_TITLE;
+				SetWindowSize(600, 700);
+			}
+
+			if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン
+				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+				GameState = END;
+			}
+		}
+		if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {//タイトル画面ボタン(ホバー時)
+			DrawFormatStringToHandle(450, 380, 0xffd700, MenuFont, "たいとる");
+		}
+		if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン(ホバー時)
+			DrawFormatStringToHandle(470, 480, 0xffd700, MenuFont, "おわる");
+		}
+
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
 }
