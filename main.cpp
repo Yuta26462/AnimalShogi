@@ -289,6 +289,9 @@ void DrawGameTitle(void)
 			GameState = GAME_INIT;   //ゲームスタート
 		}
 	}
+	if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465) {// ホバー時
+		DrawString(170, 410, "す た ぁ と", 0xffa500);
+	}
 }
 
 void GameInit(void)
@@ -524,6 +527,12 @@ void GamePause(void) {
 				GameState = END;
 			}
 		}
+		if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {//タイトル画面ボタン(ホバー時)
+			DrawFormatStringToHandle(450, 380, 0xffd700, MenuFont, "たいとる");
+		}
+		if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン(ホバー時)
+			DrawFormatStringToHandle(470, 480, 0xffd700, MenuFont, "おわる");
+		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
@@ -553,6 +562,21 @@ void SideBar(void) {
 	Live2D_Model_Draw(Live2D_ModelHandle2);		//Live2Dモデル描画
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
 
+
+	// ステータス・メニュー描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
+	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
+	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
+
+	DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "1P");
+	DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "2P");
+
+	// タイトルボタン
+	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "たいとる");
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	// マウス左クリック判定
 	if (Pause == false) {
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
@@ -573,21 +597,10 @@ void SideBar(void) {
 				SetWindowSize(600, 700);
 			}
 		}
+		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン(ホバー時)
+			DrawFormatStringToHandle(33, 610, 0xffa500, MenuFont, "たいとる");
+		}
 	}
-
-	// ステータス・メニュー描画
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
-	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
-	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
-
-	DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "1P");
-	DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "2P");
-
-	// タイトルボタン
-	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "たいとる");
-
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//ISendMessageテスト表示	
 	char Hand[2][7] = { "せんて","ごて" };
@@ -1108,16 +1121,40 @@ void MoveLion(void)
 
 void ChangeTurn(void)
 {
-	static int i = 1;
+	if (Pause == false) {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawBox(0, 0, 1000, 700, 0x000000, TRUE);
+		DrawFormatString(380, 185, 0xfffff00, "たーんこうたい");
+		DrawFormatStringToHandle(350, 250, 0xffff00, ContentsFont, "%dP のひとへこうたいしてね！",Pflag);
 
-	Mflag = 0;
-	if (Pflag == 1) {
-		Pflag = 2;
+		// つぎのひとへボタン
+		DrawRotaGraph(535, 400, 1.4f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(410, 380, 0x000000, MenuFont, "%dPのひとへ", Pflag);
+
+
+		// マウス左クリック判定
+		if (KeyFlg & MOUSE_INPUT_LEFT) {
+			if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//たーんこうたいボタン
+				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+
+				static int i = 1;
+
+				Mflag = 0;
+				if (Pflag == 1) {
+					Pflag = 2;
+				}
+				else if (Pflag == 2) {
+					Pflag = 1;
+				}
+				Status = 0;
+			}
+		}
+		if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//たーんこうたいボタン(ホバー時)
+			DrawFormatStringToHandle(410, 380, 0xff69b4, MenuFont, "%dPのひとへ",Pflag);
+		}
+
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-	else if (Pflag == 2) {
-		Pflag = 1;
-	}
-	Status = 0;
 }
 
 void SelectDisplay(int x, int y) {
