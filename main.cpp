@@ -58,7 +58,7 @@ typedef struct KomaStatus {
 	int w, h;		//駒の大きさ
 	int images;		//駒の画像データ
 	int flg;		//駒の有無情報
-	int pflg;		//駒のプレイヤー情報(1P:1,2P:2)
+	int pflg;		//駒のプレイヤー情報(1P:0,2P:1)
 }KomaSt;
 
 KomaSt Komas[KomaKinds];	//駒情報配列
@@ -78,7 +78,7 @@ int Status;		//ステージのステータス
 static int ClickFlag;	//クリックフラグ(クリックした駒の識別)
 static int Mflag;		//移動可能マークフラグ
 //static int Cflag;		//駒クリックフラグ
-static int Pflag;		//プレイヤーフラグ
+static int Pflag;		//プレイヤーフラグ 1P:0,2P;1
 static int Branch;		//1Pと2Pの分岐用変数
 
 
@@ -123,7 +123,7 @@ void MoveGiraf(void);		//キリンの移動処理
 void MoveElepha(void);		//ゾウの移動処理
 void MoveLion(void);		//ライオンの移動処理
 void ChangeTurn(void);		//自分、相手ターン変更処理
-
+int CheckKoma(int Pf,int Course);			//対象の駒のプレイヤーを調べる
 
 int LoadImages(void);      //画像読込み
 int LoadSounds(void);	  //音声読み込み
@@ -290,42 +290,42 @@ void GameInit(void)
 		case 0:
 			Komas[i].x = 500;
 			Komas[i].y = 560;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 0;
 			break;
 		case 1:
 			Komas[i].x = 320;
 			Komas[i].y = 560;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 0;
 			break;
 		case 2:
 			Komas[i].x = 680;
 			Komas[i].y = 560;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 0;
 			break;
 		case 3:
 			Komas[i].x = 500;
 			Komas[i].y = 420;
-			Komas[i].pflg = 1;
+			Komas[i].pflg = 0;
 			break;
 		case 5:
 			Komas[i].x = 500;
 			Komas[i].y = 140;
-			Komas[i].pflg = 2;
+			Komas[i].pflg = 1;
 			break;
 		case 6:
 			Komas[i].x = 680;
 			Komas[i].y = 140;
-			Komas[i].pflg = 2;
+			Komas[i].pflg = 1;
 			break;
 		case 7:
 			Komas[i].x = 320;
 			Komas[i].y = 140;
-			Komas[i].pflg = 2;
+			Komas[i].pflg = 1;
 			break;
 		case 8:
 			Komas[i].x = 500;
 			Komas[i].y = 280;
-			Komas[i].pflg = 2;
+			Komas[i].pflg = 1;
 			break;
 		}
 		Komas[i].images = KomaImage[i];
@@ -666,7 +666,7 @@ void MoveChick(void)
 	//static int Mflag = 0;		//移動可能マーク
 	//static int Cflag = 0;				
 
-	int Sign;		//符号用変数
+	int Sign = 0;		//符号用変数
 
 	if (Pflag == 0) {			//1Pの場合
 		Sign = 1;
@@ -677,9 +677,8 @@ void MoveChick(void)
 
 	//他の駒がなければ移動可能マークを描画
 	//↑
-	if (/*(Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] == 0
-		|| Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] > 5)*/
-		/*&& Mflag == 0 *//*&&*/ Komas[CHICK + Branch].y > 140) {
+	if (Komas[Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
+		&& Komas[CHICK + Branch].y > 140) {
 		DrawCircle(Komas[CHICK + Branch].x, Komas[CHICK + Branch].y - YMARGIN * Sign, 30, 0x000000, TRUE);
 		Mflag = 1;
 	}
@@ -705,32 +704,28 @@ void MoveGiraf(void)
 {
 	//他の駒がなければ移動可能マークを描画
 		//↑
-	if ((Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] == 0
-		|| Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] > 5)
+	if (Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[GIRAF + Branch].y > 140) {
 		DrawCircle(Komas[GIRAF + Branch].x, Komas[GIRAF + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
 	}	//→
-	if ((Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] == 0
-		|| Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] > 5)
+	if (Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[GIRAF + Branch].x < 680) {
 		DrawCircle(Komas[GIRAF + Branch].x + XMARGIN, Komas[GIRAF + Branch].y, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
 	}	//←
-	if ((Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] == 0
-		|| Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] > 5)
+	if (Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 		&& Komas[GIRAF + Branch].x > 320) {
 			DrawCircle(Komas[GIRAF + Branch].x - XMARGIN, Komas[GIRAF + Branch].y, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
 	}	//↓
-	if ((Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] == 0
-		|| Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] > 5)
+	if (Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[GIRAF + Branch].y < 560) {
 			DrawCircle(Komas[GIRAF + Branch].x, Komas[GIRAF + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
@@ -745,43 +740,47 @@ void MoveGiraf(void)
 		if (MouseX > Komas[GIRAF + Branch].x - HXMARGIN && MouseX < Komas[GIRAF + Branch].x + HXMARGIN) {
 			//↑
 			if (MouseY > Komas[GIRAF + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[GIRAF + Branch].y - HYMARGIN && Komas[GIRAF + Branch].y > 140) {
-				if (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 0;
 				Komas[GIRAF + Branch].y -= YMARGIN;
-				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				
 				Status = 1;		//ターンチェンジ関数に移動
 			}//↓
 			else if (MouseY > Komas[GIRAF + Branch].y + HYMARGIN && MouseY < Komas[GIRAF + Branch].y + (YMARGIN + HYMARGIN) && Komas[GIRAF + Branch].y < 560) {
-				if (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 0;
 				Komas[GIRAF + Branch].y += YMARGIN;
-				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}	//左右
 		else if (MouseY > Komas[GIRAF + Branch].y - HYMARGIN && MouseY < Komas[GIRAF + Branch].y + HYMARGIN) {
 			//←
 			if (MouseX > Komas[GIRAF + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[GIRAF + Branch].x - HXMARGIN && Komas[GIRAF + Branch].x > 320) {
-				if (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 0;
 				Komas[GIRAF + Branch].x -= XMARGIN;
-				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}//→
 			else if (MouseX > Komas[GIRAF + Branch].x + HXMARGIN && MouseX < Komas[GIRAF + Branch].x + (XMARGIN + HXMARGIN) && Komas[GIRAF + Branch].x < 680) {
-				if (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 0;
 				Komas[GIRAF + Branch].x += XMARGIN;
-				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
@@ -795,16 +794,14 @@ void MoveElepha(void)
 	//他の駒がなければ移動可能マークを描画
 	if (Komas[ELEPHA].y > 140) {
 			//左上
-		if ((Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] == 0
-			|| Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] > 5)
+		if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 			&& Komas[ELEPHA + Branch].x > 320) {
 			DrawCircle(Komas[ELEPHA + Branch].x - XMARGIN, Komas[ELEPHA + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
 		}	//右上
-		if ((Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] == 0
-			|| Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] > 5)
+		if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
 			&& Komas[ELEPHA + Branch].x < 680) {
 			DrawCircle(Komas[ELEPHA + Branch].x + XMARGIN, Komas[ELEPHA + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
@@ -814,16 +811,14 @@ void MoveElepha(void)
 	}
 	if (Komas[ELEPHA + Branch].y < 560) {
 			//左下
-		if ((Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] == 0
-			|| Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] > 5)
+		if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 			&& Komas[ELEPHA + Branch].x > 320) {
 			DrawCircle(Komas[ELEPHA + Branch].x - XMARGIN, Komas[ELEPHA + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
 		}	//右下
-		if ((Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] == 0
-			|| Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] > 5)
+		if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
 			&& Komas[ELEPHA + Branch].x < 680 && Komas[ELEPHA + Branch].y < 560) {
 			DrawCircle(Komas[ELEPHA + Branch].x + XMARGIN, Komas[ELEPHA + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
@@ -837,46 +832,50 @@ void MoveElepha(void)
 		if (MouseY < Komas[ELEPHA + Branch].y - HYMARGIN && MouseY > Komas[ELEPHA].y - (YMARGIN + HYMARGIN)) {
 				//左上
 			if (MouseX > Komas[ELEPHA + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA + Branch].x - HXMARGIN && Komas[ELEPHA + Branch].y > 140 && Komas[ELEPHA + Branch].x > 320) {
-				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
 				Komas[ELEPHA + Branch].y -= YMARGIN;
 				Komas[ELEPHA + Branch].x -= XMARGIN;
-				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3;
+				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}	//右上
 			else if (MouseX > Komas[ELEPHA + Branch].x + HXMARGIN && MouseX < Komas[ELEPHA + Branch].x + (XMARGIN + HXMARGIN) && Komas[ELEPHA + Branch].y > 140 && Komas[ELEPHA + Branch].x < 680) {
-				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
 				Komas[ELEPHA + Branch].y -= YMARGIN;
 				Komas[ELEPHA + Branch].x += XMARGIN;
-				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
 		else if (MouseY > Komas[ELEPHA + Branch].y + HYMARGIN && MouseY < Komas[ELEPHA + Branch].y + (YMARGIN + HYMARGIN)) {
 				//左下
 			if (MouseX > Komas[ELEPHA + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA + Branch].x - HXMARGIN && Komas[ELEPHA + Branch].y < 560 && Komas[ELEPHA + Branch].x > 320) {
-				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
 				Komas[ELEPHA + Branch].y += YMARGIN;
 				Komas[ELEPHA + Branch].x -= XMARGIN;
-				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}	//右下
 			else if (MouseX > Komas[ELEPHA + Branch].x + HXMARGIN && MouseX < Komas[ELEPHA + Branch].x + (XMARGIN + HXMARGIN) && Komas[ELEPHA + Branch].y < 560 && Komas[ELEPHA + Branch].x < 680) {
-				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
 				Komas[ELEPHA + Branch].y += YMARGIN;
 				Komas[ELEPHA + Branch].x += XMARGIN;
-				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
@@ -887,32 +886,28 @@ void MoveLion(void)
 {
 	//他の駒がなければ移動可能マークを描画
 		//↑
-	if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] == 0
-		|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] > 5)
+	if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[LION + Branch].y > 140) {
 		DrawCircle(Komas[LION + Branch].x, Komas[LION + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
 	}	//→
-	if ((Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
-		|| Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] > 5)
+	if (Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[LION + Branch].x < 680) {
 		DrawCircle(Komas[LION + Branch].x + XMARGIN, Komas[LION + Branch].y, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
 	}	//←
-	if ((Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
-		|| Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5)
+	if (Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 		&& Komas[LION + Branch].x > 320) {
 		DrawCircle(Komas[LION + Branch].x - XMARGIN, Komas[LION + Branch].y, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
 	}	//↓
-	if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN - 2] == 0
-		|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN - 2] > 5)
+	if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
 		&& Komas[LION + Branch].y < 560) {
 		DrawCircle(Komas[LION + Branch].x, Komas[LION + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 		if (Mflag == 0) {
@@ -921,18 +916,16 @@ void MoveLion(void)
 	}
 	if (Komas[LION + Branch].y > 140) {
 		//左上
-		if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
-			|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5)
+		if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 			&& Komas[LION + Branch].x > 320) {
-			DrawCircle(Komas[LION + Branch].x - 180, Komas[LION + Branch].y - 140, 30, 0x000000, TRUE);
+			DrawCircle(Komas[LION + Branch].x - XMARGIN, Komas[LION + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-		}	//右↑
-		if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
-			|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] > 5)
+		}	//右上
+		if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
 			&& Komas[LION + Branch].x < 680) {
-			DrawCircle(Komas[LION + Branch].x + 180, Komas[LION + Branch].y - 140, 30, 0x000000, TRUE);
+			DrawCircle(Komas[LION + Branch].x + XMARGIN, Komas[LION + Branch].y - YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
@@ -940,18 +933,16 @@ void MoveLion(void)
 	}
 	if (Komas[LION + Branch].y < 560) {
 		//左下
-		if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
-			|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5)
+		if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
 			&& Komas[LION + Branch].x > 320) {
-			DrawCircle(Komas[LION + Branch].x - 180, Komas[LION + Branch].y + 140, 30, 0x000000, TRUE);
+			DrawCircle(Komas[LION + Branch].x - XMARGIN, Komas[LION + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
 		}	//右下
-		if ((Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
-			|| Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] > 5)
-			&& Komas[LION + Branch].x < 680 && Komas[LION + Branch].y < 560) {
-			DrawCircle(Komas[LION + Branch].x + 180, Komas[LION + Branch].y + 140, 30, 0x000000, TRUE);
+		if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+			&& Komas[LION + Branch].x < 680) {
+			DrawCircle(Komas[LION + Branch].x + XMARGIN, Komas[LION + Branch].y + YMARGIN, 30, 0x000000, TRUE);
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
@@ -964,42 +955,46 @@ void MoveLion(void)
 		if (MouseX > Komas[LION + Branch].x - HXMARGIN && MouseX < Komas[LION + Branch].x + HXMARGIN) {
 			//↑
 			if (MouseY > Komas[LION + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[LION + Branch].y - HYMARGIN && Komas[LION + Branch].y > 140) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y -= YMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}//↓
 			else if (MouseY > Komas[LION + Branch].y + HYMARGIN && MouseY < Komas[LION + Branch].y + (YMARGIN + HYMARGIN) && Komas[LION + Branch].y < 560) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y += YMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}	//左右
 		else if (MouseY > Komas[LION + Branch].y - HYMARGIN && MouseY < Komas[LION].y + HYMARGIN) {
 			//←
 			if (MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN && Komas[LION + Branch].x > 320) {
-				if (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].x -= XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}//→
 			else if (MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN) && Komas[LION + Branch].x < 680) {
-				if (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].x += XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 2;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
@@ -1007,51 +1002,60 @@ void MoveLion(void)
 		if (MouseY < Komas[LION + Branch].y - HYMARGIN && MouseY > Komas[LION + Branch].y - (YMARGIN + HYMARGIN)) {
 			//左上
 			if (MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN && Komas[LION + Branch].y > 140 && Komas[LION + Branch].x > 320) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y -= YMARGIN;
 				Komas[LION + Branch].x -= XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 3;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}	//右上
 			else if (MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN) && Komas[LION + Branch].y > 140 && Komas[LION + Branch].x < 680) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y -= YMARGIN;
 				Komas[LION + Branch].x += XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
 		else if (MouseY > Komas[LION + Branch].y + HYMARGIN && MouseY < Komas[LION + Branch].y + (YMARGIN + HYMARGIN)) {
 			//左下
 			if (MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN && Komas[LION + Branch].y < 560 && Komas[LION + Branch].x > 320) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y += YMARGIN;
 				Komas[LION + Branch].x -= XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}	//右下
 			else if (MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN) && Komas[LION + Branch].y < 560 && Komas[LION + Branch].x < 680) {
-				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] > 5) {
+				if (Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag
+					&& Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] != 0) {
 					Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].flg = 0;
 				}
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y += YMARGIN;
 				Komas[LION + Branch].x += XMARGIN;
-				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
+				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
 				Status = 1;		//ターンチェンジ関数に移動
 			}
 		}
 	}
 }
+
+//int CheckKoma(int Pf,int Course)
+//{
+//	return Komas[Stage[(Komas[Pf + Branch].y - 280) / YMARGIN][(Komas[Pf + Branch].x - 320) / XMARGIN] - 1].pflg;
+//}
 
 void ChangeTurn(void)
 {
