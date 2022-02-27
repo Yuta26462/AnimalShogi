@@ -103,7 +103,7 @@ int MenuFont;		//メニュー用フォント
 //サウンド
 int KomaClick, KomaNaru, StartClick;
 //BGM
-int TitleBGM, TitleBGM01, TitleBGM00;
+int TitleBGM, TitleBGM01;
 
 /***********************************************
  * 関数のプロトタイプ宣言
@@ -493,7 +493,6 @@ int LoadSounds(void) {
 	if ((StartClick = LoadSoundMem("sounds/StartClick.mp3")) == -1)return -1;
 	if ((TitleBGM = LoadSoundMem("sounds/BGM/TitleBGM.mp3")) == -1)return -1;
 	if ((TitleBGM01 = LoadSoundMem("sounds/BGM/TitleBGM01.mp3")) == -1)return -1;
-	if ((TitleBGM00 = LoadSoundMem("sounds/BGM/TitleBGM_00.mp3")) == -1)return -1;
 
 
 	ChangeVolumeSoundMem(200, TitleBGM);
