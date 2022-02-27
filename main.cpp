@@ -572,8 +572,13 @@ void SideBar(void) {
 	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
 	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
 
-	DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "1P");
-	DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "2P");
+	if (Pflag == 1) {
+		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "1P");
+		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "2P");
+	}else{
+		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "2P");
+		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "1P");
+	}
 
 	// タイトルボタン
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
