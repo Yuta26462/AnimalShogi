@@ -103,7 +103,7 @@ int MenuFont;		//メニュー用フォント
 //サウンド
 int KomaClick, KomaNaru, StartClick;
 //BGM
-int TitleBGM, TitleBGM01, TitleBGM02, TitleBGM03, TitleBGM04, TitleBGM05, TitleBGM06;
+int TitleBGM, TitleBGM01, TitleBGM00;
 
 /***********************************************
  * 関数のプロトタイプ宣言
@@ -253,7 +253,7 @@ void DrawGameTitle(void)
 
 	//タイトル画像表示
 	DrawGraph(0, 0, TitleImage, FALSE);
-
+	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
 	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
 
 
@@ -493,10 +493,7 @@ int LoadSounds(void) {
 	if ((StartClick = LoadSoundMem("sounds/StartClick.mp3")) == -1)return -1;
 	if ((TitleBGM = LoadSoundMem("sounds/BGM/TitleBGM.mp3")) == -1)return -1;
 	if ((TitleBGM01 = LoadSoundMem("sounds/BGM/TitleBGM01.mp3")) == -1)return -1;
-	if ((TitleBGM02 = LoadSoundMem("sounds/BGM/TitleBGM02.mp3")) == -1)return -1;
-	if ((TitleBGM03 = LoadSoundMem("sounds/BGM/TitleBGM03.mp3")) == -1)return -1;
-	if ((TitleBGM04 = LoadSoundMem("sounds/BGM/TitleBGM04.mp3")) == -1)return -1;
-	if ((TitleBGM05 = LoadSoundMem("sounds/BGM/TitleBGM05.mp3")) == -1)return -1;
+	if ((TitleBGM00 = LoadSoundMem("sounds/BGM/TitleBGM_00.mp3")) == -1)return -1;
 
 
 	ChangeVolumeSoundMem(200, TitleBGM);
@@ -526,37 +523,23 @@ void SideBar(void) {
 		}
 
 		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン
-			GameState = GAME_TITLE;
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			StopSoundMem(TitleBGM01);
+			GameState = GAME_TITLE;
 			SetWindowSize(600, 700);
 		}
 	}
 
 	// ステータス・メニュー描画
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
-	//DrawBox(5, 360, 200, 690, 0xd2b48c, TRUE);
-	//DrawBox(4, 360, 199, 690, 0x000000, FALSE);
-	DrawRotaGraph(110, 530, 2.0f, 0, Flame, TRUE, FALSE);
-	DrawBox(800, 360, 990, 690, 0xd2b48c, TRUE);
-	DrawBox(799, 360, 989, 690, 0x000000, FALSE);
+	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
+	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
 
 	// タイトルボタン
-	//DrawBox(10, 590, 195, 670, 0xf5f5f5, TRUE);
-	//DrawBox(9, 590, 194, 670, 0x000000, FALSE);
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
 	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "たいとる");
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	//// 吹き出し描画
-	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
-	//DrawOval(105, 265, 100, 80, 0x000000, FALSE);
-	//DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
-	//
-	//DrawOval(895, 265, 100, 80, 0x000000, FALSE);
-	//DrawOval(895, 265, 99, 79, 0xf0f8ff, TRUE);
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	//ISendMessageテスト表示	
 	char Hand[2][7] = { "せんて","ごて" };
