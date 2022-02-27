@@ -67,9 +67,9 @@ KomaSt Komas[KomaKinds];	//駒情報配列
 /***********************************************
  * 変数の宣言
  ***********************************************/
-int	OldKey;		//前回の入力キー
-int	NowKey;		//今回の入力キー
-int	KeyFlg;		//入力キー情報
+int	OldKey, OldKey2;		//前回の入力キー
+int	NowKey, NowKey2;		//今回の入力キー
+int	KeyFlg, KeyFlg2;		//入力キー情報
 int	MouseX;		//マウスX座標
 int	MouseY;		//マウスY座標
 int	GameState = GAME_TITLE;   //ゲームモード
@@ -203,11 +203,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		NowKey = GetMouseInput();
 		KeyFlg = NowKey & ~OldKey;
 
+		OldKey2 = NowKey2;
+		NowKey2 = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+		KeyFlg2 = NowKey2 & ~OldKey2;
+
 		//マウスの位置を取得
 		GetMousePoint(&MouseX, &MouseY);
 
 
-		if (CheckHitKey(KEY_INPUT_Q) == 1) 			//Qキーでぽーずメニューへ
+		if (KeyFlg2 && CheckHitKey(KEY_INPUT_Q) == 1) 			//Qキーでぽーずメニューへ
 		{
 			if (Pause == false) {
 				Pause = true;
