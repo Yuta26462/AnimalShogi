@@ -445,14 +445,15 @@ void GameMain(void)
 	}
 	DrawFormatString(800, 50, 0x000000, "%3d", Pflag);
 	
-
-	switch (Status) {
-	case 0:
-		SelectKomas();		//駒選択
-		break;
-	case 1:
-		ChangeTurn();		//ターンチェンジ
-		break;
+	if (Pause == false) {
+		switch (Status) {
+		case 0:
+			SelectKomas();		//駒選択
+			break;
+		case 1:
+			ChangeTurn();		//ターンチェンジ
+			break;
+		}
 	}
 
 	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
@@ -553,22 +554,24 @@ void SideBar(void) {
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
 
 	// マウス左クリック判定
-	if (KeyFlg & MOUSE_INPUT_LEFT) {
-		if (MouseX < 1000 && MouseX > 800 && MouseY > 20 && MouseY < 700) {
-			Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
-			PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
-		}
+	if (Pause == false) {
+		if (KeyFlg & MOUSE_INPUT_LEFT) {
+			if (MouseX < 1000 && MouseX > 800 && MouseY > 20 && MouseY < 700) {
+				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
+			}
 
-		if (MouseX < 220 && MouseX > 0 && MouseY > 20 && MouseY < 700) {
-			Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
-			PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
-		}
+			if (MouseX < 220 && MouseX > 0 && MouseY > 20 && MouseY < 700) {
+				Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
+				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
+			}
 
-		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン
-			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-			StopSoundMem(TitleBGM01);
-			GameState = GAME_TITLE;
-			SetWindowSize(600, 700);
+			if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン
+				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+				StopSoundMem(TitleBGM01);
+				GameState = GAME_TITLE;
+				SetWindowSize(600, 700);
+			}
 		}
 	}
 
