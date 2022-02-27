@@ -1150,7 +1150,7 @@ void ChangeTurn(void)
 				else if (Pflag == 2) {
 					Pflag = 1;
 				}
-				Status = 0;
+				Status = 0; 
 			}
 		}
 		if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//たーんこうたいボタン(ホバー時)
@@ -1170,10 +1170,8 @@ void SelectDisplay(int x, int y) {
 
 void GameClear(void) {
 
-	if (Pause == true) {
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
-		DrawBox(0, 0, 1000, 700, 0xfffacd, TRUE);
-		DrawFormatString(450, 185, 0xfffffff, "げーむくりあ");
+		DrawBox(0, 0, 1000, 700, 0xffa500, TRUE);
+		DrawFormatString(380, 185, 0xfffffff, "げーむくりあ");
 
 		// タイトルボタン
 		DrawRotaGraph(525, 400, 0.8f, 0, Button, TRUE, FALSE);
@@ -1203,7 +1201,4 @@ void GameClear(void) {
 		if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン(ホバー時)
 			DrawFormatStringToHandle(470, 480, 0xffd700, MenuFont, "おわる");
 		}
-
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
 }
