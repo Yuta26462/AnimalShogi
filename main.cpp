@@ -287,7 +287,6 @@ void DrawGameTitle(void)
 			StopSoundMem(TitleBGM);
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = GAME_INIT;   //ゲームスタート
-			Handrand = GetRand(1);		//先手・後手決定
 		}
 	}
 }
@@ -346,6 +345,7 @@ void GameInit(void)
 
 	StageInit();		//ステージの初期化
 
+	Handrand = GetRand(1);		//先手・後手決定
 	mscount = 0;		//メッセージ表示カウントリセット
 	msdis = false;		//メッセージ非表示にリセット
 	Pause = false;		//ポーズ状態リセット
@@ -354,7 +354,7 @@ void GameInit(void)
 	//Cflag = 0;	//駒クリックフラグ
 	Mflag = 0;	//マーク表示フラグ
 	Status = 0;	//ステージの状況
-	Pflag = 1;	//プレイヤーフラグ
+	Pflag = Handrand + 1;	//プレイヤーフラグ
 	Branch = 0;	//1Pと2Pの駒の切り替え用変数
 
 	//ゲームメイン処理へ
