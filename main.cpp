@@ -144,10 +144,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	ChangeWindowMode(TRUE);
 
 	//ウィンドウサイズ
-	//SetGraphMode(800, 700, 32);
 	SetGraphMode(1000, 700, 32);		//描画する最大ウィンドウサイズを設定
 	SetWindowSizeChangeEnableFlag(FALSE, FALSE);	//手動で変更、FitScreenをオフにする。
-	SetWindowSize(600, 700);	//ウィンドウサイズを変更
 
 
 	// フォント読み込み
@@ -260,7 +258,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 int LoadImages()
 {
 	//タイトル
-	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
+	if ((TitleImage = LoadGraph("images/Title.png")) == -1)   return -1;
 	//ステージ
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	if ((GameClearImage = LoadGraph("images/GameClear.png")) == -1)   return -1;
@@ -405,7 +403,6 @@ void StageInit(void)
 
 void GameMain(void)
 {
-	SetWindowSize(1000, 700);	//ウィンドウサイズの変更
 
 	//ステージ画像表示
 	DrawGraph(200, 0, StageImage, FALSE);
@@ -496,7 +493,6 @@ void GamePause(void) {
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				StopSoundMem(TitleBGM01);
 				GameState = GAME_TITLE;
-				SetWindowSize(600, 700);
 			}
 
 			if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン
@@ -579,7 +575,6 @@ void SideBar(void) {
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				StopSoundMem(TitleBGM01);
 				GameState = GAME_TITLE;
-				SetWindowSize(600, 700);
 			}
 			if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//おわる画面ボタン
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
@@ -1233,7 +1228,6 @@ void GameClear(void) {
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			StopSoundMem(GameClearBGM);
 			GameState = GAME_TITLE;
-			SetWindowSize(600, 700);
 		}
 
 		if (MouseX < 605 && MouseX > 440 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン
