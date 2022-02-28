@@ -464,6 +464,10 @@ void GameMain(void)
 		}
 	}
 
+	if (Komas[LION + Branch].flg == 0) {
+		GameClear();
+	}
+
 	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 	GamePause();	// ポーズ画面呼び出し用
