@@ -584,6 +584,9 @@ void SideBar(void) {
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
 	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "たいとる");
 
+	DrawRotaGraph(890, 630, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(830, 610, 0x000000, MenuFont, "おわる");
+
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	// マウス左クリック判定
@@ -617,9 +620,16 @@ void SideBar(void) {
 				GameState = GAME_TITLE;
 				SetWindowSize(600, 700);
 			}
+			if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//おわる画面ボタン
+				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+				GameState = END;
+			}
 		}
 		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//タイトル画面ボタン(ホバー時)
 			DrawFormatStringToHandle(33, 610, 0xffa500, MenuFont, "たいとる");
+		}
+		if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//おわる画面ボタン(ホバー時)
+			DrawFormatStringToHandle(830, 610, 0xffd700, MenuFont, "おわる");
 		}
 	}
 
@@ -634,7 +644,7 @@ void SideBar(void) {
 
 void ISendMessege(const TCHAR* Contents, int partner) {
 	msdis = true;
-	if (msdis == true && mscount++ < 540) {
+	if (msdis == true && mscount++ < 1080) {
 		int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
 
 		switch (partner) {
@@ -645,7 +655,6 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 			DrawOval(105, 265, 99, 79, 0xf0f8ff, TRUE);
 			DrawFormatStringToHandle(((10 + ((200 - 10) / 2)) - (DrawWidth / 2)), 260, 0x000000, ContentsFont, Contents);
 			//DrawFormatStringToHandle(60, 260, 0x000000, ContentsFont, Contents);
-			//DrawFormatString(60, 260, 0x000000, "%d", mscount);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			break;
 
@@ -659,7 +668,7 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 			break;
 		}
 	}
-	if (mscount == 540) { msdis = false; /*mscount = 0;*/ }
+	if (mscount == 1080) { msdis = false; /*mscount = 0;*/ }
 }
 
 void SelectKomas(void)
