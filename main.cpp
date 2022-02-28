@@ -34,12 +34,6 @@ typedef enum GAME_MODE
 	ELEPHA,		//ゾウ(飛車)
 	CHICK,		//ヒヨコ(歩兵)
 	CHICKEN,	//ニワトリ(と金)
-	//2P
-	ELION,		
-	EGIRAF,		
-	EELEPHA,
-	ECHICK,
-	ECHICKEN
 };
 
 /***********************************************
@@ -81,7 +75,7 @@ static int Mflag;		//移動可能マークフラグ
  int Cflag;		//駒クリックフラグ
 static int Pflag;		//プレイヤーフラグ 1P:1,2P;2
 static int Branch;		//1Pと2Pの分岐用変数
-
+static int Abranch;		//Branchの反転
 
 int Stage[Sizey][Sizex];		//ステージ配列
 
@@ -360,7 +354,7 @@ void GameInit(void)
 	Status = 0;	//ステージの状況
 	Pflag = Handrand + 1;	//プレイヤーフラグ
 	Branch = 0;	//1Pと2Pの駒の切り替え用変数
-
+	Abranch = 0;
 	//ゲームメイン処理へ
 	GameState = GAME_MAIN;
 }
@@ -406,22 +400,6 @@ void StageInit(void)
 	Stage[1][0] = 0;	Stage[1][1] = 9;	Stage[1][2] = 0;
 	Stage[2][0] = 0;	Stage[2][1] = 4;	Stage[2][2] = 0;
 	Stage[3][0] = 2;	Stage[3][1] = 1;	Stage[3][2] = 3;
-
-	//ステージ配列の初期化
-	/*for (int i = 0; i < Sizey; i++)
-	{
-		for (int j = 0; j < Sizex; j++)
-		{
-			if (i == 0 || (i == 1 && j == 1) || i == 3 || (i == 2 && j == 1)) {
-				Stage[i][j] = 1;
-			}
-			else
-			{
-				Stage[i][j] = 0;
-			}
-			
-		}
-	}*/
 }
 
 
@@ -446,8 +424,8 @@ void GameMain(void)
 		}
 	}
 
-
-	for (int i = 0; i < Sizey; i++)
+	//デバッグ用
+	/*for (int i = 0; i < Sizey; i++)
 	{
 		for (int j = 0; j < Sizex; j++)
 		{
@@ -455,11 +433,7 @@ void GameMain(void)
 		}
 	}
 	DrawFormatString(800, 50, 0x000000, "%3d", Pflag);
-	DrawFormatString(800, 100, 0x000000, "%3d", Cflag);
-	
-	if (Komas[LION + Branch].flg == 0) {	// らいおんを取ったらげーむくりあ
-		GameState = GAME_CLEAR;
-	}
+	DrawFormatString(800, 100, 0x000000, "%3d", Cflag);*/
 
 	if (Pause == false) {
 		switch (Status) {
@@ -467,12 +441,19 @@ void GameMain(void)
 			SelectKomas();		//駒選択
 			break;
 		case 1:
-			ChangeTurn();		//ターンチェンジ
+			if (Komas[LION + Abranch].flg == 0) {
+				GameClear();
+			}
+			else
+			{
+				ChangeTurn();		//ターンチェンジ
+			}
+
 			break;
 		}
 	}
 
-	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
+	//DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 	GamePause();	// ポーズ画面呼び出し用
 
@@ -653,24 +634,6 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 
 void SelectKomas(void)
 {
-	/*static int ClickFlag = 0;*/
-
-	/*int SelectX = MouseX/180;
-	int SelectY = MouseY/140;*/
-
-	//if (KeyFlg & MOUSE_INPUT_LEFT) {
-	//	if (ClickFlag == 0) {
-	//		ClickFlag = 1;
-
-	//	}
-	//	//Status = 1;
-	//}
-	//if (ClickFlag==1)
-	//{
-	//	DrawString(Pieces[CHICK].x, Pieces[CHICK].y - 140, "test", 0x000000, TRUE);
-	//}
-	
-
 	if (Pflag == 1) {		//1Pのとき
 		Branch = 0;
 	}
@@ -678,11 +641,10 @@ void SelectKomas(void)
 		Branch = 5;
 	}
 
-	if (KeyFlg & MOUSE_INPUT_LEFT /*& Stage[SelectX / 300][SelectY / 140]*/) {
+	if (KeyFlg & MOUSE_INPUT_LEFT) {
 		if (Komas[CHICK + Branch].flg != 0 && MouseX > Komas[CHICK + Branch].x - HXMARGIN && MouseX<Komas[CHICK + Branch].x + HXMARGIN && MouseY>Komas[CHICK + Branch].y - HYMARGIN && MouseY < Komas[CHICK + Branch].y + HYMARGIN) {
 
 			ClickFlag = 1;
-			/*DrawString(Pieces[CHICK].x, Pieces[CHICK].y - 140,"test", 0x000000, TRUE);*/
 		}
 		else if (Komas[GIRAF + Branch].flg != 0 && MouseX > Komas[GIRAF + Branch].x - HXMARGIN && MouseX<Komas[GIRAF + Branch].x + HXMARGIN && MouseY>Komas[GIRAF + Branch].y - HYMARGIN && MouseY < Komas[GIRAF + Branch].y + HYMARGIN) {
 
@@ -723,9 +685,6 @@ void SelectKomas(void)
 
 void MoveChick(void)
 {
-	//static int Mflag = 0;		//移動可能マーク
-	//static int Cflag = 0;				
-
 	int Sign = 0;		//符号用変数
 
 	if (Pflag == 1) {			//1Pの場合
@@ -1203,11 +1162,6 @@ void MoveLion(void)
 		}
 	}
 }
-
-//int CheckKoma(int Pf,int Course)
-//{
-//	return Komas[Stage[(Komas[Pf + Branch].y - 280) / YMARGIN][(Komas[Pf + Branch].x - 320) / XMARGIN] - 1].pflg;
-//}
 
 void ChangeTurn(void)
 {
