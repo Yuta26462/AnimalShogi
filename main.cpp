@@ -104,7 +104,7 @@ int MenuFont;		//メニュー用フォント
 //サウンド
 int KomaClick, KomaNaru, StartClick;
 //BGM
-int TitleBGM, TitleBGM01;
+int TitleBGM, TitleBGM01,GameClearBGM;
 
 /***********************************************
  * 関数のプロトタイプ宣言
@@ -115,8 +115,6 @@ void GamePause(void);
 void DrawGameTitle(void);	//ゲームタイトル処理
 void GameClear(void);		//ゲームクリア
 void GameEnd(void);
-
-void DrawStage(void);	    //ステージ
 void StageInit(void);	    //ステージ初期処理
 
 void SelectKomas(void);	//駒の選択
@@ -263,39 +261,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	return 0;	//ソフトの終了
 }
 
-void DrawGameTitle(void)
+int LoadImages()
 {
+	//タイトル
+	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
+	//ステージ
+	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 
-	//タイトル画像表示
-	DrawGraph(0, 0, TitleImage, FALSE);
-	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
-	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
+	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
+
+	if ((Flame = LoadGraph("images/Flame.png")) == -1)   return -1;
+	if ((Button = LoadGraph("images/Button.png")) == -1)   return -1;
+
+	//ブロック画像
+	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
+}
+
+int LoadSounds(void) {
+
+	if ((KomaClick = LoadSoundMem("sounds/KomaClick.mp3")) == -1)return -1;
+	if ((KomaNaru = LoadSoundMem("sounds/KomaNaru.mp3")) == -1)return -1;
+	if ((StartClick = LoadSoundMem("sounds/StartClick.mp3")) == -1)return -1;
+	if ((TitleBGM = LoadSoundMem("sounds/BGM/TitleBGM.mp3")) == -1)return -1;
+	if ((TitleBGM01 = LoadSoundMem("sounds/BGM/TitleBGM01.mp3")) == -1)return -1;
+	if ((GameClearBGM = LoadSoundMem("sounds/BGM/GameClearBGM.mp3")) == -1)return -1;
 
 
-	//文字の表示(点滅)
-	if (++WaitTime < 50)
-	{
-		SetFontSize(50);
-		DrawString(170, 410, "す た ぁ と", 0x000000);
-	}
-	else if (WaitTime > 100)
-	{
-		WaitTime = 0;
-	}
-
-	//ゲームモードを切り替える
-	if (KeyFlg & MOUSE_INPUT_LEFT)
-	{
-		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
-		{
-			StopSoundMem(TitleBGM);
-			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-			GameState = GAME_INIT;   //ゲームスタート
-		}
-	}
-	if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465) {// ホバー時
-		DrawString(170, 410, "す た ぁ と", 0xffa500);
-	}
+	ChangeVolumeSoundMem(200, TitleBGM);
+	ChangeVolumeSoundMem(200, TitleBGM01);
+	ChangeVolumeSoundMem(200, GameClearBGM);
 }
 
 void GameInit(void)
@@ -368,9 +362,39 @@ void GameInit(void)
 	GameState = GAME_MAIN;
 }
 
-void DrawStage(void)
+void DrawGameTitle(void)
 {
 
+	//タイトル画像表示
+	DrawGraph(0, 0, TitleImage, FALSE);
+	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
+	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
+
+
+	//文字の表示(点滅)
+	if (++WaitTime < 50)
+	{
+		SetFontSize(50);
+		DrawString(170, 410, "す た ぁ と", 0x000000);
+	}
+	else if (WaitTime > 100)
+	{
+		WaitTime = 0;
+	}
+
+	//ゲームモードを切り替える
+	if (KeyFlg & MOUSE_INPUT_LEFT)
+	{
+		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
+		{
+			StopSoundMem(TitleBGM);
+			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+			GameState = GAME_INIT;   //ゲームスタート
+		}
+	}
+	if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465) {// ホバー時
+		DrawString(170, 410, "す た ぁ と", 0xffa500);
+	}
 }
 
 void StageInit(void)
@@ -465,30 +489,13 @@ void GameMain(void)
 	}
 
 	if (Komas[LION + Branch].flg == 0) {
-		GameClear();
+		GameState = GAME_CLEAR;
 	}
 
 	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
 
 	GamePause();	// ポーズ画面呼び出し用
 
-}
-
-
-int LoadImages()
-{
-	//タイトル
-	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
-	//ステージ
-	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
-
-	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
-
-	if ((Flame = LoadGraph("images/Flame.png")) == -1)   return -1;
-	if ((Button = LoadGraph("images/Button.png")) == -1)   return -1;
-
-	//ブロック画像
-	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
 	
 void GameEnd(void) {
@@ -545,20 +552,6 @@ void GamePause(void) {
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
-}
-
-
-int LoadSounds(void) {
-
-	if ((KomaClick = LoadSoundMem("sounds/KomaClick.mp3")) == -1)return -1;
-	if ((KomaNaru = LoadSoundMem("sounds/KomaNaru.mp3")) == -1)return -1;
-	if ((StartClick = LoadSoundMem("sounds/StartClick.mp3")) == -1)return -1;
-	if ((TitleBGM = LoadSoundMem("sounds/BGM/TitleBGM.mp3")) == -1)return -1;
-	if ((TitleBGM01 = LoadSoundMem("sounds/BGM/TitleBGM01.mp3")) == -1)return -1;
-
-
-	ChangeVolumeSoundMem(200, TitleBGM);
-	ChangeVolumeSoundMem(200, TitleBGM01);
 }
 
 
@@ -1281,35 +1274,39 @@ void SelectDisplay(int x, int y) {
 
 void GameClear(void) {
 
-		DrawBox(0, 0, 1000, 700, 0xffa500, TRUE);
-		DrawFormatString(380, 185, 0xfffffff, "げーむくりあ");
+	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
+	if (CheckSoundMem(GameClearBGM) == 0) PlaySoundMem(GameClearBGM, DX_PLAYTYPE_BACK);
 
-		// タイトルボタン
-		DrawRotaGraph(525, 400, 0.8f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(450, 380, 0x000000, MenuFont, "たいとる");
-
-		DrawRotaGraph(525, 500, 0.8f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(470, 480, 0x000000, MenuFont, "おわる");
+	DrawBox(0, 0, 1000, 700, 0xffa500, TRUE);
+	DrawFormatString(380, 185, 0xfffffff, "げーむくりあ");
 
 
-		// マウス左クリック判定
-		if (KeyFlg & MOUSE_INPUT_LEFT) {
-			if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {	//タイトル画面ボタン
-				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-				StopSoundMem(TitleBGM01);
-				GameState = GAME_TITLE;
-				SetWindowSize(600, 700);
-			}
+	// タイトルボタン
+	DrawRotaGraph(520, 400, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(445, 380, 0x000000, MenuFont, "たいとる");
 
-			if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン
-				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-				GameState = END;
-			}
+	DrawRotaGraph(520, 500, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(465, 480, 0x000000, MenuFont, "おわる");
+
+
+	// マウス左クリック判定
+	if (KeyFlg & MOUSE_INPUT_LEFT) {
+		if (MouseX < 605 && MouseX > 440 && MouseY > 370 && MouseY < 430) {	//タイトル画面ボタン
+			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+			StopSoundMem(TitleBGM01);
+			GameState = GAME_TITLE;
+			SetWindowSize(600, 700);
 		}
-		if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {//タイトル画面ボタン(ホバー時)
-			DrawFormatStringToHandle(450, 380, 0xffd700, MenuFont, "たいとる");
+
+		if (MouseX < 605 && MouseX > 440 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン
+			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
+			GameState = END;
 		}
-		if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン(ホバー時)
-			DrawFormatStringToHandle(470, 480, 0xffd700, MenuFont, "おわる");
-		}
+	}
+	if (MouseX < 605 && MouseX > 440 && MouseY > 370 && MouseY < 430) {//タイトル画面ボタン(ホバー時)
+		DrawFormatStringToHandle(445, 380, 0xffd700, MenuFont, "たいとる");
+	}
+	if (MouseX < 605 && MouseX > 440 && MouseY > 470 && MouseY < 530) {	//おわる画面ボタン(ホバー時)
+		DrawFormatStringToHandle(465, 480, 0xffd700, MenuFont, "おわる");
+	}
 }
