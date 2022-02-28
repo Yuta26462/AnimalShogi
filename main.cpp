@@ -1275,7 +1275,7 @@ void GameClear(void) {
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
 		if (MouseX < 605 && MouseX > 440 && MouseY > 370 && MouseY < 430) {	//タイトル画面ボタン
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-			StopSoundMem(TitleBGM01);
+			StopSoundMem(GameClearBGM);
 			GameState = GAME_TITLE;
 			SetWindowSize(600, 700);
 		}
