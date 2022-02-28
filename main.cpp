@@ -590,12 +590,24 @@ void SideBar(void) {
 	if (Pause == false) {
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
 			if (MouseX < 1000 && MouseX > 800 && MouseY > 20 && MouseY < 700) {
-				Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+				if(Pflag == 1){
+					Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+				}
+				else {
+					Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
+				}
+				
 				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
 			}
 
 			if (MouseX < 220 && MouseX > 0 && MouseY > 20 && MouseY < 700) {
-				Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
+				if (Pflag != 1) {
+					Live2D_Model_StartMotion(Live2D_ModelHandle, "Tap2", GetRand(5));
+				}
+				else {
+					Live2D_Model_StartMotion(Live2D_ModelHandle2, "Tap", GetRand(5));
+				}
+
 				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
 			}
 
