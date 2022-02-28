@@ -94,6 +94,7 @@ int TitleImage,Live2DStage;      //タイトル画像
 int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
 int Flame, Button;//UI画像
+int GameClearImage;		//ゲームクリア画像
 int HandCount, HandCount2;		//てめカウント用
 
 int Live2D_ModelHandle, Live2D_ModelHandle2;//Live2Dハンドル
@@ -268,7 +269,7 @@ int LoadImages()
 	if ((TitleImage = LoadGraph("images/Title.jpg")) == -1)   return -1;
 	//ステージ
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
-
+	if ((GameClearImage = LoadGraph("images/GameClear.png")) == -1)   return -1;
 	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
 
 	if ((Flame = LoadGraph("images/Flame.png")) == -1)   return -1;
@@ -456,6 +457,10 @@ void GameMain(void)
 	DrawFormatString(800, 50, 0x000000, "%3d", Pflag);
 	DrawFormatString(800, 100, 0x000000, "%3d", Cflag);
 	
+	if (Komas[LION + Branch].flg == 0) {	// らいおんを取ったらげーむくりあ
+		GameState = GAME_CLEAR;
+	}
+
 	if (Pause == false) {
 		switch (Status) {
 		case 0:
@@ -465,10 +470,6 @@ void GameMain(void)
 			ChangeTurn();		//ターンチェンジ
 			break;
 		}
-	}
-
-	if (Komas[LION + Branch].flg == 0) {
-		GameState = GAME_CLEAR;
 	}
 
 	DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//デバック用 座標確認
@@ -1259,9 +1260,8 @@ void GameClear(void) {
 	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
 	if (CheckSoundMem(GameClearBGM) == 0) PlaySoundMem(GameClearBGM, DX_PLAYTYPE_BACK);
 
-	DrawBox(0, 0, 1000, 700, 0xffa500, TRUE);
-	DrawFormatString(380, 185, 0xfffffff, "げーむくりあ！");
-
+	DrawGraph(0, 0, GameClearImage, TRUE);
+	DrawFormatString(310, 260, 0xffd700, "%dP がかちしました！", Pflag == 1 ? 2 : 1);
 
 	// タイトルボタン
 	DrawRotaGraph(520, 400, 0.8f, 0, Button, TRUE, FALSE);

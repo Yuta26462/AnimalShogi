@@ -13,6 +13,7 @@
   TitleImage  
   StageImage  
   Live2DStage  
+  GameClearImage  
   Flame  
   Button  
   KomaImage    
