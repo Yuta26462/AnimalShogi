@@ -788,9 +788,9 @@ void MoveChick(void)
 			else if (Pflag == 2) {		//2P‚Ì‚Æ‚«
 				if (Komas[CHICK + Branch].y < 560 && MouseY > Komas[CHICK + Branch].y + HYMARGIN && MouseY < Komas[CHICK + Branch].y + (YMARGIN + HYMARGIN)) {
 					if (Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN + 2][(Komas[CHICK + Branch].x - 320) / XMARGIN] != 0
-						&& Komas[Stage[(Komas[CHICK + Branch].y - 280 + 2) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)
+						&& Komas[Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN + 2][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)
 					{
-						Komas[Stage[(Komas[CHICK + Branch].y - 280 + 2) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].flg = 0;
+						Komas[Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN + 2][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].flg = 0;
 					}
 					Stage[Komas[CHICK + Branch].y / YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 0;
 					Komas[CHICK + Branch].y += YMARGIN;
