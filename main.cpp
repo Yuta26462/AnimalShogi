@@ -94,8 +94,9 @@ int TitleImage,Live2DStage;      //タイトル画像
 int StageImage;      //ステージ画像
 int KomaImage[10];   //コマ画像
 int Flame, Button;//UI画像
+int HandCount, HandCount2;		//てめカウント用
 
-int Live2D_ModelHandle, Live2D_ModelHandle2;
+int Live2D_ModelHandle, Live2D_ModelHandle2;//Live2Dハンドル
 int mscount;		//ISendMessage用カウント
 bool msdis;			//ISendMessage用表示・非表示フラグ
 int ContentsFont;	//ISendMessege用フォント
@@ -351,6 +352,7 @@ void GameInit(void)
 	msdis = false;		//メッセージ非表示にリセット
 	Pause = false;		//ポーズ状態リセット
 
+	HandCount = 0,HandCount2 = 0;	//てめカウント初期化
 	ClickFlag = 0;	//クリックフラグ(駒の識別)
 	Cflag = 0;	//駒クリックフラグ
 	Mflag = 0;	//マーク表示フラグ
@@ -443,29 +445,6 @@ void GameMain(void)
 		}
 	}
 
-	/*for (int i = 0; i < 3; i++) { 
-		DrawRotaGraph(120 + (i)*180, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
-		for (int i = 0; i < 3; i++)
-			DrawRotaGraph(120 + (i) * 180, 270, 1.8, 0, KomaImage[i+3], TRUE, FALSE);
-		for (int i = 0; i < 3; i++)
-			DrawRotaGraph(120 + (i) * 180, 420, 1.8, 0, KomaImage[i + 6], TRUE, FALSE);
-	}*/
-	//DrawRotaGraph(120, 130, 2.0, 0, KomaImage[0], TRUE, FALSE);
-
-
-	/*if (KeyFlg & MOUSE_INPUT_LEFT) {
-		if (MouseX < 405 && MouseX > 230 && MouseY > 55 && MouseY < 200) {
-			int i = GetRand(10);
-			StartTime = GetNowCount();
-			while (GetNowCount() - StartTime < 500)
-			{
-				DrawRotaGraph(315, 130, 1.8, 0, KomaImage[i], TRUE, FALSE);
-				if (ProcessMessage() == -1)break;
-				ScreenFlip();
-			}
-			PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-		}
-	}*/
 
 	for (int i = 0; i < Sizey; i++)
 	{
@@ -574,8 +553,11 @@ void SideBar(void) {
 	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
 
 
-		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, Pflag == 1 ? "1P" : "2P");
-		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, Pflag == 1 ? "2P" : "1P");
+	DrawFormatStringToHandle(80, 380, Pflag == 1 ? 0xffff00:0xffd700, MenuFont, Pflag == 1 ? "1P" : "2P");
+	DrawFormatStringToHandle(860, 380, Pflag == 1 ? 0xffd700:0xffff00, MenuFont, Pflag == 1 ? "2P" : "1P");
+
+	DrawFormatStringToHandle(50, 450, Pflag == 1 ? 0xff7f50:0xff571a, MenuFont, "%dてめ", Pflag == 1 ? HandCount : HandCount2);
+	DrawFormatStringToHandle(835, 450, Pflag == 1 ? 0xff571a:0xff7f50, MenuFont, "%dてめ", Pflag == 1 ? HandCount2 : HandCount);
 
 	// タイトルボタン
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
@@ -1243,7 +1225,7 @@ void ChangeTurn(void)
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
 			if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//たーんこうたいボタン
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-
+				Pflag == 1 ? HandCount++ : HandCount2++;
 				//static int i = 1;
 
 				Mflag = 0;
@@ -1278,7 +1260,7 @@ void GameClear(void) {
 	if (CheckSoundMem(GameClearBGM) == 0) PlaySoundMem(GameClearBGM, DX_PLAYTYPE_BACK);
 
 	DrawBox(0, 0, 1000, 700, 0xffa500, TRUE);
-	DrawFormatString(380, 185, 0xfffffff, "げーむくりあ");
+	DrawFormatString(380, 185, 0xfffffff, "げーむくりあ！");
 
 
 	// タイトルボタン
