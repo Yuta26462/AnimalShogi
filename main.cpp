@@ -1217,7 +1217,7 @@ void GameClear(void) {
 	if (CheckSoundMem(GameClearBGM) == 0) PlaySoundMem(GameClearBGM, DX_PLAYTYPE_BACK);
 
 	DrawGraph(0, 0, GameClearImage, TRUE);
-	DrawFormatString(310, 260, 0xffd700, "%dP がかちしました！", Pflag == 1 ? 2 : 1);
+	DrawFormatString(310, 260, 0xffd700, "%dP がかちしました！", Pflag == 1 ? 1 : 2);
 
 	// タイトルボタン
 	DrawRotaGraph(520, 400, 0.8f, 0, Button, TRUE, FALSE);
