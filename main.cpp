@@ -187,8 +187,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dモデル読み込み
 	Live2D_ModelHandle2 = Live2D_LoadModel("dll/21miku_street/21miku_street.model3.json");	//Live2Dモデル読み込み
-	Live2D_Model_SetTranslate(Live2D_ModelHandle, 400, -50);		//Live2Dモデルの座標を設定
-	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dモデルの座標を設定
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, 400, -50);		//Live2Dモデルの座標を初期設定
+	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dモデルの座標を初期設定
 	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);		//Live2Dモデルの大きさを設定
 	Live2D_Model_SetExtendRate(Live2D_ModelHandle2, 2.0f, 2.0f);	//Live2Dモデルの大きさを設定
 	ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_CHARSET_DEFAULT);	//ContentsFontフォントデータ(メッセージ用)を作成
@@ -562,6 +562,9 @@ void SideBar(void) {
 	DrawGraph(0, 0, Live2DStage, FALSE);		//Live2D用背景
 	DrawGraph(800, 0, Live2DStage, FALSE);		//Live2D用背景
 
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, Pflag == 1 ? 400 : -380, -50);		//Live2Dモデルの座標を設定
+	Live2D_Model_SetTranslate(Live2D_ModelHandle2, Pflag == 1 ? -380 : 400, 0);		//Live2Dモデルの座標を設定
+
 	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dモデル描画
 	Live2D_Model_Draw(Live2D_ModelHandle2);		//Live2Dモデル描画
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
@@ -572,13 +575,9 @@ void SideBar(void) {
 	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
 	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
 
-	if (Pflag == 1) {
-		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "1P");
-		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "2P");
-	}else{
-		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, "2P");
-		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, "1P");
-	}
+
+		DrawFormatStringToHandle(80, 380, 0xffff00, MenuFont, Pflag == 1 ? "1P" : "2P");
+		DrawFormatStringToHandle(860, 380, 0xffd700, MenuFont, Pflag == 1 ? "2P" : "1P");
 
 	// タイトルボタン
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
@@ -622,7 +621,7 @@ void SideBar(void) {
 
 void ISendMessege(const TCHAR* Contents, int partner) {
 	msdis = true;
-	if (msdis == true && mscount++ < 360) {
+	if (msdis == true && mscount++ < 540) {
 		int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
 
 		switch (partner) {
@@ -647,7 +646,7 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 			break;
 		}
 	}
-	if (mscount == 360) { msdis = false; mscount = 0;  }
+	if (mscount == 540) { msdis = false; /*mscount = 0;*/ }
 }
 
 void SelectKomas(void)
@@ -1181,11 +1180,11 @@ void ChangeTurn(void)
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 		DrawBox(0, 0, 1000, 700, 0x000000, TRUE);
 		DrawFormatString(380, 185, 0xfffff00, "たーんこうたい");
-		DrawFormatStringToHandle(350, 250, 0xffff00, ContentsFont, "%dP のひとへこうたいしてね！",Pflag);
+		DrawFormatStringToHandle(350, 250, 0xffff00, ContentsFont, "%dP のひとへこうたいしてね！",Pflag == 1 ? 2 : 1);
 
 		// つぎのひとへボタン
 		DrawRotaGraph(535, 400, 1.4f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(410, 380, 0x000000, MenuFont, "%dPのひとへ", Pflag);
+		DrawFormatStringToHandle(410, 380, 0x000000, MenuFont, "%dPのひとへ", Pflag == 1 ? 2 : 1);
 
 
 		// マウス左クリック判定
@@ -1206,7 +1205,7 @@ void ChangeTurn(void)
 			}
 		}
 		if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//たーんこうたいボタン(ホバー時)
-			DrawFormatStringToHandle(410, 380, 0xff69b4, MenuFont, "%dPのひとへ",Pflag);
+			DrawFormatStringToHandle(410, 380, 0xff69b4, MenuFont, "%dPのひとへ", Pflag == 1 ? 2 : 1);
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
