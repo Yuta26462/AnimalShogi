@@ -636,9 +636,11 @@ void SelectKomas(void)
 {
 	if (Pflag == 1) {		//1P‚Ì‚Æ‚«
 		Branch = 0;
+		Abranch = 5;
 	}
 	else if (Pflag == 2) {	//2P‚Ì‚Æ‚«
 		Branch = 5;
+		Abranch = 0;
 	}
 
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
