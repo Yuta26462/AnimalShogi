@@ -370,7 +370,7 @@ void DrawGameTitle(void)
 	if (++WaitTime < 50)
 	{
 		SetFontSize(50);
-		DrawString(170, 410, "す た ぁ と", 0x000000);
+		DrawString(380, 410, "す た ぁ と", 0x000000);
 	}
 	else if (WaitTime > 100)
 	{
@@ -380,15 +380,15 @@ void DrawGameTitle(void)
 	//ゲームモードを切り替える
 	if (KeyFlg & MOUSE_INPUT_LEFT)
 	{
-		if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465)
+		if (MouseX > 370 && MouseX < 650 && MouseY>405 && MouseY < 465)
 		{
 			StopSoundMem(TitleBGM);
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = GAME_INIT;   //ゲームスタート
 		}
 	}
-	if (MouseX > 160 && MouseX < 460 && MouseY>405 && MouseY < 465) {// ホバー時
-		DrawString(170, 410, "す た ぁ と", 0xffa500);
+	if (MouseX > 370 && MouseX < 650 && MouseY>405 && MouseY < 465) {// ホバー時
+		DrawString(380, 410, "す た ぁ と", 0xffa500);
 	}
 }
 
