@@ -1,23 +1,23 @@
-/*******************************
-**	@@‚Ç‚¤‚Ô‚Â‚µ‚å‚¤‚¬@@@**
+ï»¿/*******************************
+**	ã€€ã€€ã©ã†ã¶ã¤ã—ã‚‡ã†ãã€€ã€€ã€€**
 *******************************/
 #include "DxLib.h"
 #include<stdlib.h>
 
 
 
-#define KomaKinds 10 //‹î‚Ìí—Ş
-#define Sizex 3		//”Õ–Ê(‰¡)
-#define Sizey 4		//”Õ–Ê(c)
-#define XMARGIN 180	//‹î‚Æ‹î‚ÌŠÔŠu(‰¡)
-#define HXMARGIN 90	//‹î‚Æƒ}ƒX‚ÌŠÔŠu(‰¡)
-#define YMARGIN 140	//‹î‚Æ‹î‚ÌŠÔŠu(c)
-#define HYMARGIN 70	//‹î‚Æƒ}ƒX‚ÌŠÔŠu(c)
+#define KomaKinds 10 //é§’ã®ç¨®é¡
+#define Sizex 3		//ç›¤é¢(æ¨ª)
+#define Sizey 4		//ç›¤é¢(ç¸¦)
+#define XMARGIN 180	//é§’ã¨é§’ã®é–“éš”(æ¨ª)
+#define HXMARGIN 90	//é§’ã¨ãƒã‚¹ã®é–“éš”(æ¨ª)
+#define YMARGIN 140	//é§’ã¨é§’ã®é–“éš”(ç¸¦)
+#define HYMARGIN 70	//é§’ã¨ãƒã‚¹ã®é–“éš”(ç¸¦)
 
 LPCSTR font_path = "Fonts/Cherrybomb/Cherrybomb.ttf";
 
 /***********************************************
- * —ñ‹“‘Ì‚ÌéŒ¾
+ * åˆ—æŒ™ä½“ã®å®£è¨€
  ***********************************************/
 typedef enum GAME_MODE
 {
@@ -29,169 +29,166 @@ typedef enum GAME_MODE
 	GAME_OVER,
 	END = 99,
 	//1P
-	LION = 0,	//ƒ‰ƒCƒIƒ“(‰¤«)
-	GIRAF,		//ƒLƒŠƒ“(Šps)
-	ELEPHA,		//ƒ]ƒE(”òÔ)
-	CHICK,		//ƒqƒˆƒR(•à•º)
-	CHICKEN,	//ƒjƒƒgƒŠ(‚Æ‹à)
+	LION = 0,	//ãƒ©ã‚¤ã‚ªãƒ³(ç‹å°†)
+	GIRAF,		//ã‚­ãƒªãƒ³(è§’è¡Œ)
+	ELEPHA,		//ã‚¾ã‚¦(é£›è»Š)
+	CHICK,		//ãƒ’ãƒ¨ã‚³(æ­©å…µ)
+	CHICKEN,	//ãƒ‹ãƒ¯ãƒˆãƒª(ã¨é‡‘)
 };
 
 /***********************************************
- * ’è”‚ÌéŒ¾
+ * å®šæ•°ã®å®£è¨€
  ***********************************************/
 const int HEIGHT = 12;
 const int WIDTH = 12;
 
 /***********************************************
- * \‘¢‘Ì‚ÌéŒ¾
+ * æ§‹é€ ä½“ã®å®£è¨€
  ***********************************************/
 
-//‹î\‘¢‘Ì‚ÌéŒ¾
+//é§’æ§‹é€ ä½“ã®å®£è¨€
 typedef struct KomaStatus {
-	int x, y;		//‹î‚ÌÀ•W
-	int w, h;		//‹î‚Ì‘å‚«‚³
-	int images;		//‹î‚Ì‰æ‘œƒf[ƒ^
-	int flg;		//‹î‚Ì—L–³î•ñ
-	int pflg;		//‹î‚ÌƒvƒŒƒCƒ„[î•ñ(1P:1,2P:2)
+	int x, y;		//é§’ã®åº§æ¨™
+	int w, h;		//é§’ã®å¤§ãã•
+	int images;		//é§’ã®ç”»åƒãƒ‡ãƒ¼ã‚¿
+	int flg;		//é§’ã®æœ‰ç„¡æƒ…å ±
+	int pflg;		//é§’ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±(1P:1,2P:2)
 }KomaSt;
 
-KomaSt Komas[KomaKinds];	//‹îî•ñ”z—ñ
+KomaSt Komas[KomaKinds];	//é§’æƒ…å ±é…åˆ—
 
 
 /***********************************************
- * •Ï”‚ÌéŒ¾
+ * å¤‰æ•°ã®å®£è¨€
  ***********************************************/
-int	OldKey, OldKey2;		//‘O‰ñ‚Ì“ü—ÍƒL[
-int	NowKey, NowKey2;		//¡‰ñ‚Ì“ü—ÍƒL[
-int	KeyFlg, KeyFlg2;		//“ü—ÍƒL[î•ñ
-int	MouseX;		//ƒ}ƒEƒXXÀ•W
-int	MouseY;		//ƒ}ƒEƒXYÀ•W
-int	GameState = GAME_TITLE;   //ƒQ[ƒ€ƒ‚[ƒh
-bool Pause;		//ƒ|[ƒY”»’è
+int	OldKey, OldKey2;		//å‰å›ã®å…¥åŠ›ã‚­ãƒ¼
+int	NowKey, NowKey2;		//ä»Šå›ã®å…¥åŠ›ã‚­ãƒ¼
+int	KeyFlg, KeyFlg2;		//å…¥åŠ›ã‚­ãƒ¼æƒ…å ±
+int	MouseX;		//ãƒã‚¦ã‚¹Xåº§æ¨™
+int	MouseY;		//ãƒã‚¦ã‚¹Yåº§æ¨™
+int	GameState = GAME_TITLE;   //ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
+bool Pause;		//ãƒãƒ¼ã‚ºåˆ¤å®š
 
-int Status;		//ƒXƒe[ƒW‚ÌƒXƒe[ƒ^ƒX
-static int ClickFlag;	//ƒNƒŠƒbƒNƒtƒ‰ƒO(ƒNƒŠƒbƒN‚µ‚½‹î‚Ì¯•Ê)
-static int Mflag;		//ˆÚ“®‰Â”\ƒ}[ƒNƒtƒ‰ƒO
- int Cflag;		//‹îƒNƒŠƒbƒNƒtƒ‰ƒO
-static int Pflag;		//ƒvƒŒƒCƒ„[ƒtƒ‰ƒO 1P:1,2P;2
-static int Branch;		//1P‚Æ2P‚Ì•ªŠò—p•Ï”
-static int Abranch;		//Branch‚Ì”½“]
+int Status;		//ã‚¹ãƒ†ãƒ¼ã‚¸ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+static int ClickFlag;	//ã‚¯ãƒªãƒƒã‚¯ãƒ•ãƒ©ã‚°(ã‚¯ãƒªãƒƒã‚¯ã—ãŸé§’ã®è­˜åˆ¥)
+static int Mflag;		//ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ãƒ•ãƒ©ã‚°
+ int Cflag;		//é§’ã‚¯ãƒªãƒƒã‚¯ãƒ•ãƒ©ã‚°
+static int Pflag;		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ©ã‚° 1P:1,2P;2
+static int Branch;		//1Pã¨2Pã®åˆ†å²ç”¨å¤‰æ•°
+static int Abranch;		//Branchã®åè»¢
 
-int Stage[Sizey][Sizex];		//ƒXƒe[ƒW”z—ñ
+int Stage[Sizey][Sizex];		//ã‚¹ãƒ†ãƒ¼ã‚¸é…åˆ—
 
-int Handrand;		//æèEŒãè”»•Ê—p—”
+int Handrand;		//å…ˆæ‰‹ãƒ»å¾Œæ‰‹åˆ¤åˆ¥ç”¨ä¹±æ•°
 
-int WaitTime = 0;    //	‘Ò‚¿ŠÔ
-int StartTime = GetNowCount();	//‹N“®‚©‚ç‚ÌŒo‰ßŠÔ
+int WaitTime = 0;    //	å¾…ã¡æ™‚é–“
+int StartTime = GetNowCount();	//èµ·å‹•ã‹ã‚‰ã®çµŒéæ™‚é–“
 
-int TitleImage,Live2DStage;      //ƒ^ƒCƒgƒ‹‰æ‘œ
-int StageImage;      //ƒXƒe[ƒW‰æ‘œ
-int KomaImage[10];   //ƒRƒ}‰æ‘œ
-int Flame, Button;//UI‰æ‘œ
-int GameClearImage;		//ƒQ[ƒ€ƒNƒŠƒA‰æ‘œ
-int HandCount, HandCount2;		//‚Ä‚ßƒJƒEƒ“ƒg—p
+int TitleImage,Live2DStage;      //ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒ
+int StageImage;      //ã‚¹ãƒ†ãƒ¼ã‚¸ç”»åƒ
+int KomaImage[10];   //ã‚³ãƒç”»åƒ
+int Flame, Button;//UIç”»åƒ
+int GameClearImage;		//ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢ç”»åƒ
+int HandCount, HandCount2;		//ã¦ã‚ã‚«ã‚¦ãƒ³ãƒˆç”¨
 
-int Live2D_ModelHandle, Live2D_ModelHandle2;//Live2Dƒnƒ“ƒhƒ‹
-int mscount;		//ISendMessage—pƒJƒEƒ“ƒg
-bool msdis;			//ISendMessage—p•\¦E”ñ•\¦ƒtƒ‰ƒO
-int ContentsFont;	//ISendMessege—pƒtƒHƒ“ƒg
-int MenuFont;		//ƒƒjƒ…[—pƒtƒHƒ“ƒg
+int Live2D_ModelHandle, Live2D_ModelHandle2;//Live2Dãƒãƒ³ãƒ‰ãƒ«
+int mscount;		//ISendMessageç”¨ã‚«ã‚¦ãƒ³ãƒˆ
+bool msdis;			//ISendMessageç”¨è¡¨ç¤ºãƒ»éè¡¨ç¤ºãƒ•ãƒ©ã‚°
+int ContentsFont;	//ISendMessegeç”¨ãƒ•ã‚©ãƒ³ãƒˆ
+int MenuFont;		//ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”¨ãƒ•ã‚©ãƒ³ãƒˆ
+int CreditFont;	//ã‚¯ãƒ¬ã‚¸ãƒƒãƒˆç”¨ãƒ•ã‚©ãƒ³ãƒˆ
 
-//ƒTƒEƒ“ƒh
+//ã‚µã‚¦ãƒ³ãƒ‰
 int KomaClick, KomaNaru, StartClick;
 //BGM
 int TitleBGM, TitleBGM01,GameClearBGM;
 
 /***********************************************
- * ŠÖ”‚Ìƒvƒƒgƒ^ƒCƒvéŒ¾
+ * é–¢æ•°ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
  ***********************************************/
-void GameInit(void);		//ƒQ[ƒ€‰Šú‰»ˆ—
-void GameMain(void);		//ƒQ[ƒ€ƒƒCƒ“ˆ—
+void GameInit(void);		//ã‚²ãƒ¼ãƒ åˆæœŸåŒ–å‡¦ç†
+void GameMain(void);		//ã‚²ãƒ¼ãƒ ãƒ¡ã‚¤ãƒ³å‡¦ç†
 void GamePause(void);
-void DrawGameTitle(void);	//ƒQ[ƒ€ƒ^ƒCƒgƒ‹ˆ—
-void GameClear(void);		//ƒQ[ƒ€ƒNƒŠƒA
+void DrawGameTitle(void);	//ã‚²ãƒ¼ãƒ ã‚¿ã‚¤ãƒˆãƒ«å‡¦ç†
+void GameClear(void);		//ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢
 void GameEnd(void);
-void StageInit(void);	    //ƒXƒe[ƒW‰Šúˆ—
+void StageInit(void);	    //ã‚¹ãƒ†ãƒ¼ã‚¸åˆæœŸå‡¦ç†
 
-void SelectKomas(void);	//‹î‚Ì‘I‘ğ
-void SelectDisplay(int x, int y);	//‘I‘ğ‚Å‚«‚é”ÍˆÍ•\¦
-void MoveChick(void);		//ƒqƒˆƒR‚ÌˆÚ“®ˆ—
-void MoveGiraf(void);		//ƒLƒŠƒ“‚ÌˆÚ“®ˆ—
-void MoveElepha(void);		//ƒ]ƒE‚ÌˆÚ“®ˆ—
-void MoveLion(void);		//ƒ‰ƒCƒIƒ“‚ÌˆÚ“®ˆ—
-void ChangeTurn(void);		//©•ªA‘Šèƒ^[ƒ“•ÏXˆ—
-int CheckKoma(int Pf,int Course);			//‘ÎÛ‚Ì‹î‚ÌƒvƒŒƒCƒ„[‚ğ’²‚×‚é
+void SelectKomas(void);	//é§’ã®é¸æŠ
+void SelectDisplay(int x, int y);	//é¸æŠã§ãã‚‹ç¯„å›²è¡¨ç¤º
+void MoveChick(void);		//ãƒ’ãƒ¨ã‚³ã®ç§»å‹•å‡¦ç†
+void MoveGiraf(void);		//ã‚­ãƒªãƒ³ã®ç§»å‹•å‡¦ç†
+void MoveElepha(void);		//ã‚¾ã‚¦ã®ç§»å‹•å‡¦ç†
+void MoveLion(void);		//ãƒ©ã‚¤ã‚ªãƒ³ã®ç§»å‹•å‡¦ç†
+void ChangeTurn(void);		//è‡ªåˆ†ã€ç›¸æ‰‹ã‚¿ãƒ¼ãƒ³å¤‰æ›´å‡¦ç†
+int CheckKoma(int Pf,int Course);			//å¯¾è±¡ã®é§’ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’èª¿ã¹ã‚‹
 
-int LoadImages(void);      //‰æ‘œ“Ç‚İ
-int LoadSounds(void);	  //‰¹º“Ç‚İ‚İ
+int LoadImages(void);      //ç”»åƒèª­è¾¼ã¿
+int LoadSounds(void);	  //éŸ³å£°èª­ã¿è¾¼ã¿
 
-void ISendMessege(const TCHAR* Contents, int partner = 0);		//ƒƒbƒZ[ƒW•\¦
-void SideBar(void);		//ƒTƒCƒhƒƒjƒ…[•\¦
+void ISendMessege(const TCHAR* Contents, int partner = 0);		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤º
+void SideBar(void);		//ã‚µã‚¤ãƒ‰ãƒ¡ãƒ‹ãƒ¥ãƒ¼è¡¨ç¤º
 
 
 /***********************************************
- * ƒvƒƒOƒ‰ƒ€‚ÌŠJn
+ * ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã®é–‹å§‹
  ***********************************************/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-	//ƒ^ƒCƒgƒ‹‚ğİ’è
-	SetMainWindowText("‚Ç‚¤‚Ô‚Â‚µ‚å‚¤‚¬");
+	// ãƒ­ã‚°ã‚’å‡ºåŠ›ã—ãªã„
+	SetOutApplicationLogValidFlag(FALSE);
 
-	SetWindowIconID(01);	//ƒAƒCƒRƒ“‚ğİ’è
+	//ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
+	SetMainWindowText("ã©ã†ã¶ã¤ã—ã‚‡ã†ã");
 
-	//ƒEƒBƒ“ƒhƒEƒ‚[ƒh‚Å‹N“®
+	SetWindowIconID(01);	//ã‚¢ã‚¤ã‚³ãƒ³ã‚’è¨­å®š
+
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰ã§èµ·å‹•
 	ChangeWindowMode(TRUE);
 
-	//ƒEƒBƒ“ƒhƒEƒTƒCƒY
-	SetGraphMode(1000, 700, 32);		//•`‰æ‚·‚éÅ‘åƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğİ’è
-	SetWindowSizeChangeEnableFlag(FALSE, FALSE);	//è“®‚Å•ÏXAFitScreen‚ğƒIƒt‚É‚·‚éB
+	//ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚º
+	SetGraphMode(1000, 700, 32);		//æç”»ã™ã‚‹æœ€å¤§ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’è¨­å®š
+	SetWindowSizeChangeEnableFlag(FALSE, FALSE);	//æ‰‹å‹•ã§å¤‰æ›´ã€FitScreenã‚’ã‚ªãƒ•ã«ã™ã‚‹ã€‚
 
 
-	// ƒtƒHƒ“ƒg“Ç‚İ‚İ
-	if (AddFontResourceEx(font_path, FR_PRIVATE, NULL) > 0) {
-	}
-	else {
-		// ƒtƒHƒ“ƒg“ÇƒGƒ‰[ˆ—
-		MessageBox(NULL, "ƒtƒHƒ“ƒg“Ç¸”s", "", MB_OK);
-	}
-	ChangeFont("Cherry bomb", DX_CHARSET_DEFAULT);
-
-
-	// Live2D Cubism Core DLL ‚Ì“Ç‚İ‚İ( 64bit ƒAƒvƒŠ‚Ìê‡‚Æ 32bit ƒAƒvƒŠ‚Ìê‡‚Å“Ç‚İ‚Ş dll ‚ğ•ÏX )
+	// Live2D Cubism Core DLL ã®èª­ã¿è¾¼ã¿( 64bit ã‚¢ãƒ—ãƒªã®å ´åˆã¨ 32bit ã‚¢ãƒ—ãƒªã®å ´åˆã§èª­ã¿è¾¼ã‚€ dll ã‚’å¤‰æ›´ )
 #ifdef _WIN64
 	Live2D_SetCubism4CoreDLLPath("dll/live2d/x86_64/Live2DCubismCore.dll");
 #else
 	Live2D_SetCubism4CoreDLLPath("dll/live2d/x86/Live2DCubismCore.dll");
 #endif
 
-
-
-	//DXƒ‰ƒCƒuƒ‰ƒŠ‚Ì‰Šú‰»ˆ—
+	//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®åˆæœŸåŒ–å‡¦ç†
 	if (DxLib_Init() == -1)   return -1;
 
-	//•`‰ææ‰æ–Ê‚ğ— ‚É‚·‚é
+	//æç”»å…ˆç”»é¢ã‚’è£ã«ã™ã‚‹
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	
-	if (LoadImages() == -1)   return -1;	//‰æ‘œ“Ç‚İŠÖ”‚ğŒÄ‚Ño‚µ
-	if (LoadSounds() == -1)   return -1;	//‰¹º“Ç‚İ‚İ	
+	if (LoadImages() == -1)   return -1;	//ç”»åƒèª­è¾¼ã¿é–¢æ•°ã‚’å‘¼ã³å‡ºã—
+	if (LoadSounds() == -1)   return -1;	//éŸ³å£°èª­ã¿è¾¼ã¿	
 
-	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dƒ‚ƒfƒ‹“Ç‚İ‚İ
-	Live2D_ModelHandle2 = Live2D_LoadModel("dll/21miku_street/21miku_street.model3.json");	//Live2Dƒ‚ƒfƒ‹“Ç‚İ‚İ
-	Live2D_Model_SetTranslate(Live2D_ModelHandle, 400, -50);		//Live2Dƒ‚ƒfƒ‹‚ÌÀ•W‚ğ‰Šúİ’è
-	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dƒ‚ƒfƒ‹‚ÌÀ•W‚ğ‰Šúİ’è
-	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);		//Live2Dƒ‚ƒfƒ‹‚Ì‘å‚«‚³‚ğİ’è
-	Live2D_Model_SetExtendRate(Live2D_ModelHandle2, 2.0f, 2.0f);	//Live2Dƒ‚ƒfƒ‹‚Ì‘å‚«‚³‚ğİ’è
-	ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_CHARSET_DEFAULT);	//ContentsFontƒtƒHƒ“ƒgƒf[ƒ^(ƒƒbƒZ[ƒW—p)‚ğì¬
-	MenuFont = CreateFontToHandle("Cherry bomb", 45, 2, DX_CHARSET_DEFAULT);	//ContentsFontƒtƒHƒ“ƒgƒf[ƒ^(ƒƒbƒZ[ƒW—p)‚ğì¬
+	Live2D_ModelHandle = Live2D_LoadModel("dll/hiyori_free_jp/runtime/hiyori_free_t08.model3.json");	//Live2Dãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	Live2D_ModelHandle2 = Live2D_LoadModel("dll/miku/runtime/miku.model3.json");	//Live2Dãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, 400, -50);		//Live2Dãƒ¢ãƒ‡ãƒ«ã®åº§æ¨™ã‚’åˆæœŸè¨­å®š
+	Live2D_Model_SetTranslate(Live2D_ModelHandle2, -380, 0);		//Live2Dãƒ¢ãƒ‡ãƒ«ã®åº§æ¨™ã‚’åˆæœŸè¨­å®š
+	Live2D_Model_SetExtendRate(Live2D_ModelHandle,1.8f, 1.8f);		//Live2Dãƒ¢ãƒ‡ãƒ«ã®å¤§ãã•ã‚’è¨­å®š
+	Live2D_Model_SetExtendRate(Live2D_ModelHandle2, 1.6f, 1.6f);	//Live2Dãƒ¢ãƒ‡ãƒ«ã®å¤§ãã•ã‚’è¨­å®š
 
-	// ƒQ[ƒ€ƒ‹[ƒv
+	ChangeFontType(DX_FONTTYPE_ANTIALIASING);		//ãƒ•ã‚©ãƒ³ãƒˆã‚’ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹å¯¾å¿œã«ã™ã‚‹ã€‚
+	// ContentsFont = CreateFontToHandle("Cherry bomb", 30, 2, DX_FONTTYPE_ANTIALIASING, DX_CHARSET_DEFAULT);	//ContentsFontãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿(ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç”¨)ã‚’ä½œæˆ
+	ContentsFont = LoadFontDataToHandle("Fonts/Cherrybomb/Contents.dft", 0);
+	MenuFont = LoadFontDataToHandle("Fonts/Cherrybomb/Menu.dft", 0);
+	// MenuFont = CreateFontToHandle("Cherry bomb", 45, 2, DX_FONTTYPE_ANTIALIASING, DX_CHARSET_DEFAULT);	//ContentsFontãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿(ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç”¨)ã‚’ä½œæˆ
+	CreditFont = CreateFontToHandle("ãƒ¡ã‚¤ãƒªã‚ª", 15, 1, DX_FONTTYPE_ANTIALIASING, DX_CHARSET_DEFAULT);	//ã‚¯ãƒ¬ã‚¸ãƒƒãƒˆç”¨ãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆ
+
+	// ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—
 	while (ProcessMessage() == 0 && GameState != END && !(KeyFlg & PAD_INPUT_START))
 	{
 
 
-		// “ü—ÍƒL[æ“¾
+		// å…¥åŠ›ã‚­ãƒ¼å–å¾—
 		OldKey = NowKey;
 		NowKey = GetMouseInput();
 		KeyFlg = NowKey & ~OldKey;
@@ -200,11 +197,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		NowKey2 = GetJoypadInputState(DX_INPUT_KEY_PAD1);
 		KeyFlg2 = NowKey2 & ~OldKey2;
 
-		//ƒ}ƒEƒX‚ÌˆÊ’u‚ğæ“¾
+		//ãƒã‚¦ã‚¹ã®ä½ç½®ã‚’å–å¾—
 		GetMousePoint(&MouseX, &MouseY);
 
 
-		if (KeyFlg2 && CheckHitKey(KEY_INPUT_Q) == 1) 			//QƒL[‚Å‚Û[‚¸ƒƒjƒ…[‚Ö
+		if (KeyFlg2 && CheckHitKey(KEY_INPUT_Q) == 1) 			//Qã‚­ãƒ¼ã§ã½ãƒ¼ãšãƒ¡ãƒ‹ãƒ¥ãƒ¼ã¸
 		{
 			if (Pause == false) {
 				Pause = true;
@@ -212,11 +209,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			else { Pause = false; }
 		}
 
-		if (GetWindowUserCloseFlag() != 0)	GameState = END;		//ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì•Â‚¶‚éƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚çƒQ[ƒ€I—¹
+		if (GetWindowUserCloseFlag() != 0)	GameState = END;		//ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é–‰ã˜ã‚‹ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
 
-		ClearDrawScreen();		// ‰æ–Ê‚Ì‰Šú‰»
+		ClearDrawScreen();		// ç”»é¢ã®åˆæœŸåŒ–
 
-		//	ƒ‚[ƒVƒ‡ƒ“Ä¶‚ªI—¹‚µ‚½‚çIdleƒ‚[ƒVƒ‡ƒ“‚ğƒ‰ƒ“ƒ_ƒ€Ä¶
+		//	ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³å†ç”ŸãŒçµ‚äº†ã—ãŸã‚‰Idleãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ãƒ©ãƒ³ãƒ€ãƒ å†ç”Ÿ
 		if (Live2D_Model_IsMotionFinished(Live2D_ModelHandle) == TRUE) {
 			Live2D_Model_StartMotion(Live2D_ModelHandle, "Idle", GetRand(3));
 		}
@@ -224,9 +221,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			Live2D_Model_StartMotion(Live2D_ModelHandle2, "Idle", GetRand(4));
 		}
 
-		Live2D_Model_Update(Live2D_ModelHandle, 1 / 200.0f);	//Live2Dƒ‚ƒfƒ‹XV
-		Live2D_Model_Update(Live2D_ModelHandle2, 1 / 200.0f);	//Live2Dƒ‚ƒfƒ‹XV
-		Live2D_RenderBegin();	//Live2Dƒ‚ƒfƒ‹•`‰æŠJn€”õ
+		Live2D_Model_Update(Live2D_ModelHandle, 1 / 200.0f);	//Live2Dãƒ¢ãƒ‡ãƒ«æ›´æ–°
+		Live2D_Model_Update(Live2D_ModelHandle2, 1 / 200.0f);	//Live2Dãƒ¢ãƒ‡ãƒ«æ›´æ–°
+		Live2D_RenderBegin();	//Live2Dãƒ¢ãƒ‡ãƒ«æç”»é–‹å§‹æº–å‚™
 
 
 		switch (GameState)
@@ -247,19 +244,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			GameEnd();
 			break;
 		}
-		ScreenFlip();			//— ‰æ–Ê‚Ì“à—e‚ğ•\‰æ–Ê‚É”½‰f
+		ScreenFlip();			//è£ç”»é¢ã®å†…å®¹ã‚’è¡¨ç”»é¢ã«åæ˜ 
 	}
 
-	DxLib_End();	//DXƒ‰ƒCƒuƒ‰ƒŠg—p‚ÌI—¹ˆ—
+	DxLib_End();	//DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½¿ç”¨ã®çµ‚äº†å‡¦ç†
 
-	return 0;	//ƒ\ƒtƒg‚ÌI—¹
+	return 0;	//ã‚½ãƒ•ãƒˆã®çµ‚äº†
 }
 
 int LoadImages()
 {
-	//ƒ^ƒCƒgƒ‹
+	//ã‚¿ã‚¤ãƒˆãƒ«
 	if ((TitleImage = LoadGraph("images/Title.png")) == -1)   return -1;
-	//ƒXƒe[ƒW
+	//ã‚¹ãƒ†ãƒ¼ã‚¸
 	if ((StageImage = LoadGraph("images/Stage.jpg")) == -1)   return -1;
 	if ((GameClearImage = LoadGraph("images/GameClear.png")) == -1)   return -1;
 	if ((Live2DStage = LoadGraph("images/Live2DStage.png")) == -1)   return -1;
@@ -267,7 +264,7 @@ int LoadImages()
 	if ((Flame = LoadGraph("images/Flame.png")) == -1)   return -1;
 	if ((Button = LoadGraph("images/Button.png")) == -1)   return -1;
 
-	//ƒuƒƒbƒN‰æ‘œ
+	//ãƒ–ãƒ­ãƒƒã‚¯ç”»åƒ
 	if (LoadDivGraph("images/Koma.png", 10, 5, 2, 80, 80, KomaImage) == -1)   return -1;
 }
 
@@ -288,7 +285,7 @@ int LoadSounds(void) {
 
 void GameInit(void)
 {
-	//‹î‚Ì‰Šú‰»
+	//é§’ã®åˆæœŸåŒ–
 	for (int i = 0; i < KomaKinds; i++)
 	{
 		switch (i)
@@ -338,57 +335,57 @@ void GameInit(void)
 		Komas[i].flg = 1;
 	}
 
-	StageInit();		//ƒXƒe[ƒW‚Ì‰Šú‰»
+	StageInit();		//ã‚¹ãƒ†ãƒ¼ã‚¸ã®åˆæœŸåŒ–
 
-	Handrand = GetRand(1);		//æèEŒãèŒˆ’è
-	mscount = 0;		//ƒƒbƒZ[ƒW•\¦ƒJƒEƒ“ƒgƒŠƒZƒbƒg
-	msdis = false;		//ƒƒbƒZ[ƒW”ñ•\¦‚ÉƒŠƒZƒbƒg
-	Pause = false;		//ƒ|[ƒYó‘ÔƒŠƒZƒbƒg
+	Handrand = GetRand(1);		//å…ˆæ‰‹ãƒ»å¾Œæ‰‹æ±ºå®š
+	mscount = 0;		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤ºã‚«ã‚¦ãƒ³ãƒˆãƒªã‚»ãƒƒãƒˆ
+	msdis = false;		//ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸éè¡¨ç¤ºã«ãƒªã‚»ãƒƒãƒˆ
+	Pause = false;		//ãƒãƒ¼ã‚ºçŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆ
 
-	HandCount = 0,HandCount2 = 0;	//‚Ä‚ßƒJƒEƒ“ƒg‰Šú‰»
-	ClickFlag = 0;	//ƒNƒŠƒbƒNƒtƒ‰ƒO(‹î‚Ì¯•Ê)
-	Cflag = 0;	//‹îƒNƒŠƒbƒNƒtƒ‰ƒO
-	Mflag = 0;	//ƒ}[ƒN•\¦ƒtƒ‰ƒO
-	Status = 0;	//ƒXƒe[ƒW‚Ìó‹µ
-	Pflag = Handrand + 1;	//ƒvƒŒƒCƒ„[ƒtƒ‰ƒO
-	Branch = 0;	//1P‚Æ2P‚Ì‹î‚ÌØ‚è‘Ö‚¦—p•Ï”
+	HandCount = 0,HandCount2 = 0;	//ã¦ã‚ã‚«ã‚¦ãƒ³ãƒˆåˆæœŸåŒ–
+	ClickFlag = 0;	//ã‚¯ãƒªãƒƒã‚¯ãƒ•ãƒ©ã‚°(é§’ã®è­˜åˆ¥)
+	Cflag = 0;	//é§’ã‚¯ãƒªãƒƒã‚¯ãƒ•ãƒ©ã‚°
+	Mflag = 0;	//ãƒãƒ¼ã‚¯è¡¨ç¤ºãƒ•ãƒ©ã‚°
+	Status = 0;	//ã‚¹ãƒ†ãƒ¼ã‚¸ã®çŠ¶æ³
+	Pflag = Handrand + 1;	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ•ãƒ©ã‚°
+	Branch = 0;	//1Pã¨2Pã®é§’ã®åˆ‡ã‚Šæ›¿ãˆç”¨å¤‰æ•°
 	Abranch = 0;
-	//ƒQ[ƒ€ƒƒCƒ“ˆ—‚Ö
+	//ã‚²ãƒ¼ãƒ ãƒ¡ã‚¤ãƒ³å‡¦ç†ã¸
 	GameState = GAME_MAIN;
 }
 
 void DrawGameTitle(void)
 {
 
-	//ƒ^ƒCƒgƒ‹‰æ‘œ•\¦
+	//ã‚¿ã‚¤ãƒˆãƒ«ç”»åƒè¡¨ç¤º
 	DrawGraph(0, 0, TitleImage, FALSE);
 	if (CheckSoundMem(TitleBGM01) == 1) StopSoundMem(TitleBGM01);
 	if (CheckSoundMem(TitleBGM) == 0) PlaySoundMem(TitleBGM, DX_PLAYTYPE_BACK);
 
 
-	//•¶š‚Ì•\¦(“_–Å)
+	//æ–‡å­—ã®è¡¨ç¤º(ç‚¹æ»…)
 	if (++WaitTime < 50)
 	{
 		SetFontSize(50);
-		DrawString(380, 410, "‚· ‚½ ‚Ÿ ‚Æ", 0x000000);
+		DrawStringToHandle(380, 410, "ã™ ãŸ ã ã¨", 0x000000, MenuFont);
 	}
 	else if (WaitTime > 100)
 	{
 		WaitTime = 0;
 	}
 
-	//ƒQ[ƒ€ƒ‚[ƒh‚ğØ‚è‘Ö‚¦‚é
+	//ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 	if (KeyFlg & MOUSE_INPUT_LEFT)
 	{
 		if (MouseX > 370 && MouseX < 650 && MouseY>405 && MouseY < 465)
 		{
 			StopSoundMem(TitleBGM);
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
-			GameState = GAME_INIT;   //ƒQ[ƒ€ƒXƒ^[ƒg
+			GameState = GAME_INIT;   //ã‚²ãƒ¼ãƒ ã‚¹ã‚¿ãƒ¼ãƒˆ
 		}
 	}
-	if (MouseX > 370 && MouseX < 650 && MouseY>405 && MouseY < 465) {// ƒzƒo[
-		DrawString(380, 410, "‚· ‚½ ‚Ÿ ‚Æ", 0xffa500);
+	if (MouseX > 370 && MouseX < 650 && MouseY>405 && MouseY < 465) {// ãƒ›ãƒãƒ¼æ™‚
+		DrawStringToHandle(380, 410, "ã™ ãŸ ã ã¨", 0xffa500, MenuFont);
 	}
 }
 
@@ -404,7 +401,7 @@ void StageInit(void)
 void GameMain(void)
 {
 
-	//ƒXƒe[ƒW‰æ‘œ•\¦
+	//ã‚¹ãƒ†ãƒ¼ã‚¸ç”»åƒè¡¨ç¤º
 	DrawGraph(200, 0, StageImage, FALSE);
 
 	SideBar();
@@ -414,14 +411,14 @@ void GameMain(void)
 
 	for (int i = 0; i < KomaKinds; i++) {
 		if (i == 4 || i == 9) {
-			continue;			//ƒjƒƒgƒŠ‚Í•`‰æ‚µ‚È‚¢
+			continue;			//ãƒ‹ãƒ¯ãƒˆãƒªã¯æç”»ã—ãªã„
 		}
 		if (Komas[i].flg != 0) {
 			DrawRotaGraph(Komas[i].x, Komas[i].y, 1.8, 0, Komas[i].images, TRUE, FALSE);
 		}
 	}
 
-	//ƒfƒoƒbƒO—p
+	//ãƒ‡ãƒãƒƒã‚°ç”¨
 	/*for (int i = 0; i < Sizey; i++)
 	{
 		for (int j = 0; j < Sizex; j++)
@@ -435,40 +432,44 @@ void GameMain(void)
 	if (Pause == false) {
 		switch (Status) {
 		case 0:
-			SelectKomas();		//‹î‘I‘ğ
+			SelectKomas();		//é§’é¸æŠ
 			break;
 		case 1:
 			if (Komas[LION + Abranch].flg == 0) {
-				GameClear();
+				GameState = GAME_CLEAR;
 			}
 			else
 			{
-				ChangeTurn();		//ƒ^[ƒ“ƒ`ƒFƒ“ƒW
+				ChangeTurn();		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸
 			}
 
 			break;
 		}
 	}
 
-	//DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//ƒfƒoƒbƒN—p À•WŠm”F
+	//DrawFormatStringToHandle(270, 25, 0x000000, MenuFont, "x:%d  y:%d", MouseX, MouseY);	//ãƒ‡ãƒãƒƒã‚¯ç”¨ åº§æ¨™ç¢ºèª
 
-	GamePause();	// ƒ|[ƒY‰æ–ÊŒÄ‚Ño‚µ—p
+	GamePause();	// ãƒãƒ¼ã‚ºç”»é¢å‘¼ã³å‡ºã—ç”¨
+
+	// ã‚¯ãƒ¬ã‚¸ãƒƒãƒˆè¡¨è¨˜
+	DrawFormatStringToHandle(385, 650, 0x000000, CreditFont, "åˆéŸ³ãƒŸã‚¯ (C) Crypton Future Media, Inc.");
+	DrawFormatStringToHandle(385, 670, 0x000000, CreditFont, "æ¡ƒç€¬ã²ã‚ˆã‚Š (C) Live2D Inc.");
 
 }
 	
 void GameEnd(void) {
 
-	DrawFormatString(500, 300, 0x000000,"‚°[‚Ş‚µ‚ã‚¤‚è‚å‚¤");
+	DrawFormatString(500, 300, 0x000000,"ã’ãƒ¼ã‚€ã—ã‚…ã†ã‚Šã‚‡ã†");
 
 	if(RemoveFontResourceEx(font_path, FR_PRIVATE, NULL)) {
 	} else {
 		MessageBox(NULL, "remove failure", "", MB_OK);
 	}
-	Live2D_RenderEnd();		//Live2D•`‰æ‚ÌI—¹
-	Live2D_DeleteModel(Live2D_ModelHandle);	//Live2Dƒ‚ƒfƒ‹íœ
-	Live2D_DeleteModel(Live2D_ModelHandle2);	//Live2Dƒ‚ƒfƒ‹íœ
-	DeleteFontToHandle(ContentsFont);	//ContentsFontƒf[ƒ^‚ğíœ
-	DeleteFontToHandle(MenuFont);	//MenuFontƒf[ƒ^‚ğíœ
+	Live2D_RenderEnd();		//Live2Dæç”»ã®çµ‚äº†
+	Live2D_DeleteModel(Live2D_ModelHandle);	//Live2Dãƒ¢ãƒ‡ãƒ«å‰Šé™¤
+	Live2D_DeleteModel(Live2D_ModelHandle2);	//Live2Dãƒ¢ãƒ‡ãƒ«å‰Šé™¤
+	DeleteFontToHandle(ContentsFont);	//ContentsFontãƒ‡ãƒ¼ã‚¿ã‚’å‰Šé™¤
+	DeleteFontToHandle(MenuFont);	//MenuFontãƒ‡ãƒ¼ã‚¿ã‚’å‰Šé™¤
 
 }
 
@@ -477,34 +478,39 @@ void GamePause(void) {
 	if (Pause == true) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 		DrawBox(0, 0, 1000, 700, 0x000000, TRUE);
-		DrawFormatString(450, 185, 0xfffffff, "‚Û[‚¸");
 
-		// ƒ^ƒCƒgƒ‹ƒ{ƒ^ƒ“
-		DrawRotaGraph(525, 400, 0.8f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(450, 380, 0x000000, MenuFont, "‚½‚¢‚Æ‚é");
+		// ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		constexpr int offsetX = -8;
+		constexpr int offsetY = 0;
 
-		DrawRotaGraph(525, 500, 0.8f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(470, 480, 0x000000, MenuFont, "‚¨‚í‚é");
+		DrawFormatStringToHandle(430 + offsetX, 185 + offsetY, 0xfffffff, MenuFont, "ã½ãƒ¼ãš");
+
+		// ã‚¿ã‚¤ãƒˆãƒ«ãƒœã‚¿ãƒ³
+		DrawRotaGraph(505 + offsetX, 400 + offsetY, 0.8f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(425 + offsetX, 380 + offsetY, 0x000000, MenuFont, "ãŸã„ã¨ã‚‹");
+
+		DrawRotaGraph(505 + offsetX, 500 + offsetY, 0.8f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(450 + offsetX, 480 + offsetY, 0x000000, MenuFont, "ãŠã‚ã‚‹");
 
 
-		// ƒ}ƒEƒX¶ƒNƒŠƒbƒN”»’è
+		// ãƒã‚¦ã‚¹å·¦ã‚¯ãƒªãƒƒã‚¯åˆ¤å®š
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
-			if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {	//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“
+			if (MouseX < 590 + offsetX && MouseX > 425 + offsetX && MouseY > 370 + offsetY && MouseY < 430 + offsetY) {	//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				StopSoundMem(TitleBGM01);
 				GameState = GAME_TITLE;
 			}
 
-			if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“
+			if (MouseX < 590 + offsetX && MouseX > 425 + offsetX && MouseY > 470 + offsetY && MouseY < 530 + offsetY) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				GameState = END;
 			}
 		}
-		if (MouseX < 610 && MouseX > 445 && MouseY > 370 && MouseY < 430) {//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-			DrawFormatStringToHandle(450, 380, 0xffd700, MenuFont, "‚½‚¢‚Æ‚é");
+		if (MouseX < 590 + offsetX && MouseX > 425 + offsetX && MouseY > 370 + offsetY && MouseY < 430 + offsetY) {//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+			DrawFormatStringToHandle(425 + offsetX, 380 + offsetY, 0xffd700, MenuFont, "ãŸã„ã¨ã‚‹");
 		}
-		if (MouseX < 610 && MouseX > 445 && MouseY > 470 && MouseY < 530) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-			DrawFormatStringToHandle(470, 480, 0xffd700, MenuFont, "‚¨‚í‚é");
+		if (MouseX < 590 + offsetX && MouseX > 425 + offsetX && MouseY > 470 + offsetY && MouseY < 530 + offsetY) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+			DrawFormatStringToHandle(450 + offsetX, 480 + offsetY, 0xffd700, MenuFont, "ãŠã‚ã‚‹");
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -514,18 +520,18 @@ void GamePause(void) {
 
 void SideBar(void) {
 
-	DrawGraph(0, 0, Live2DStage, FALSE);		//Live2D—p”wŒi
-	DrawGraph(800, 0, Live2DStage, FALSE);		//Live2D—p”wŒi
+	DrawGraph(0, 0, Live2DStage, FALSE);		//Live2Dç”¨èƒŒæ™¯
+	DrawGraph(800, 0, Live2DStage, FALSE);		//Live2Dç”¨èƒŒæ™¯
 
-	Live2D_Model_SetTranslate(Live2D_ModelHandle, Pflag == 1 ? 400 : -380, -50);		//Live2Dƒ‚ƒfƒ‹‚ÌÀ•W‚ğİ’è
-	Live2D_Model_SetTranslate(Live2D_ModelHandle2, Pflag == 1 ? -380 : 400, 0);		//Live2Dƒ‚ƒfƒ‹‚ÌÀ•W‚ğİ’è
+	Live2D_Model_SetTranslate(Live2D_ModelHandle, Pflag == 1 ? 400 : -380, -50);		//Live2Dãƒ¢ãƒ‡ãƒ«ã®åº§æ¨™ã‚’è¨­å®š
+	Live2D_Model_SetTranslate(Live2D_ModelHandle2, Pflag == 1 ? -380 : 400, -50);		//Live2Dãƒ¢ãƒ‡ãƒ«ã®åº§æ¨™ã‚’è¨­å®š
 
-	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dƒ‚ƒfƒ‹•`‰æ
-	Live2D_Model_Draw(Live2D_ModelHandle2);		//Live2Dƒ‚ƒfƒ‹•`‰æ
+	Live2D_Model_Draw(Live2D_ModelHandle);		//Live2Dãƒ¢ãƒ‡ãƒ«æç”»
+	Live2D_Model_Draw(Live2D_ModelHandle2);		//Live2Dãƒ¢ãƒ‡ãƒ«æç”»
 	//Live2D_Model_StartMotion(Live2D_ModelHandle, "FlickDown", 0);
 
 
-	// ƒXƒe[ƒ^ƒXEƒƒjƒ…[•`‰æ
+	// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ»ãƒ¡ãƒ‹ãƒ¥ãƒ¼æç”»
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 235);
 	DrawRotaGraph(110, 520, 2.0f, 0, Flame, TRUE, FALSE);
 	DrawRotaGraph(890, 520, 2.0f, 0, Flame, TRUE, FALSE);
@@ -534,20 +540,20 @@ void SideBar(void) {
 	DrawFormatStringToHandle(80, 380, Pflag == 1 ? 0xffff00:0xffd700, MenuFont, Pflag == 1 ? "1P" : "2P");
 	DrawFormatStringToHandle(860, 380, Pflag == 1 ? 0xffd700:0xffff00, MenuFont, Pflag == 1 ? "2P" : "1P");
 
-	DrawFormatStringToHandle(50, 450, Pflag == 1 ? 0xff7f50:0xff571a, MenuFont, "%d‚Ä‚ß", Pflag == 1 ? HandCount : HandCount2);
-	DrawFormatStringToHandle(835, 450, Pflag == 1 ? 0xff571a:0xff7f50, MenuFont, "%d‚Ä‚ß", Pflag == 1 ? HandCount2 : HandCount);
+	DrawFormatStringToHandle(50, 450, Pflag == 1 ? 0xff7f50:0xff571a, MenuFont, "%dã¦ã‚", Pflag == 1 ? HandCount : HandCount2);
+	DrawFormatStringToHandle(835, 450, Pflag == 1 ? 0xff571a:0xff7f50, MenuFont, "%dã¦ã‚", Pflag == 1 ? HandCount2 : HandCount);
 
-	// ƒ^ƒCƒgƒ‹ƒ{ƒ^ƒ“
+	// ã‚¿ã‚¤ãƒˆãƒ«ãƒœã‚¿ãƒ³
 	DrawRotaGraph(110, 630, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "‚½‚¢‚Æ‚é");
+	DrawFormatStringToHandle(33, 610, 0x000000, MenuFont, "ãŸã„ã¨ã‚‹");
 
 	DrawRotaGraph(890, 630, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatStringToHandle(830, 610, 0x000000, MenuFont, "‚¨‚í‚é");
+	DrawFormatStringToHandle(830, 610, 0x000000, MenuFont, "ãŠã‚ã‚‹");
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	// ƒ}ƒEƒX¶ƒNƒŠƒbƒN”»’è
-	if (Pause == false) {
+	// ãƒã‚¦ã‚¹å·¦ã‚¯ãƒªãƒƒã‚¯åˆ¤å®š
+	if (Pause == false ) {
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
 			if (MouseX < 1000 && MouseX > 800 && MouseY > 20 && MouseY < 700) {
 				if(Pflag == 1){
@@ -571,37 +577,37 @@ void SideBar(void) {
 				PlaySoundMem(KomaNaru, DX_PLAYTYPE_BACK);
 			}
 
-			if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“
+			if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				StopSoundMem(TitleBGM01);
 				GameState = GAME_TITLE;
 			}
-			if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“
+			if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				GameState = END;
 			}
 		}
-		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-			DrawFormatStringToHandle(33, 610, 0xffa500, MenuFont, "‚½‚¢‚Æ‚é");
+		if (MouseX < 190 && MouseX > 30 && MouseY > 600 && MouseY < 655) {	//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+			DrawFormatStringToHandle(33, 610, 0xffa500, MenuFont, "ãŸã„ã¨ã‚‹");
 		}
-		if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-			DrawFormatStringToHandle(830, 610, 0xffd700, MenuFont, "‚¨‚í‚é");
+		if (MouseX < 970 && MouseX > 810 && MouseY > 600 && MouseY < 655) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+			DrawFormatStringToHandle(830, 610, 0xffd700, MenuFont, "ãŠã‚ã‚‹");
 		}
 	}
 
-	//ISendMessageƒeƒXƒg•\¦	
-	char Hand[2][7] = { "‚¹‚ñ‚Ä","‚²‚Ä" };
+	//ISendMessageãƒ†ã‚¹ãƒˆè¡¨ç¤º	
+	char Hand[2][7] = { "ã›ã‚“ã¦","ã”ã¦" };
 	
 	ISendMessege(Hand[Handrand]);
 	ISendMessege(Hand[1 - Handrand], 1);
-	//ISendMessege("‚Ä‚·‚Æ‚Å‚·B");
-	//ISendMessege("‚µ‚å‚¤‚²", 1);
+	//ISendMessege("ã¦ã™ã¨ã§ã™ã€‚");
+	//ISendMessege("ã—ã‚‡ã†ã”", 1);
 }
 
 void ISendMessege(const TCHAR* Contents, int partner) {
 	msdis = true;
 	if (msdis == true && mscount++ < 1080) {
-		int DrawWidth = GetDrawStringWidth(Contents, strlen2Dx(Contents));
+		int DrawWidth = GetDrawFormatStringWidthToHandle(ContentsFont,  Contents);
 
 		switch (partner) {
 
@@ -629,11 +635,11 @@ void ISendMessege(const TCHAR* Contents, int partner) {
 
 void SelectKomas(void)
 {
-	if (Pflag == 1) {		//1P‚Ì‚Æ‚«
+	if (Pflag == 1) {		//1Pã®ã¨ã
 		Branch = 0;
 		Abranch = 5;
 	}
-	else if (Pflag == 2) {	//2P‚Ì‚Æ‚«
+	else if (Pflag == 2) {	//2Pã®ã¨ã
 		Branch = 5;
 		Abranch = 0;
 	}
@@ -682,17 +688,17 @@ void SelectKomas(void)
 
 void MoveChick(void)
 {
-	int Sign = 0;		//•„†—p•Ï”
+	int Sign = 0;		//ç¬¦å·ç”¨å¤‰æ•°
 
-	if (Pflag == 1) {			//1P‚Ìê‡
+	if (Pflag == 1) {			//1Pã®å ´åˆ
 		Sign = 1;
 	}
-	else if (Pflag == 2) {		//2P‚Ìê‡
+	else if (Pflag == 2) {		//2Pã®å ´åˆ
 		Sign = -1;
 	}
 
-	//‘¼‚Ì‹î‚ª‚È‚¯‚ê‚ÎˆÚ“®‰Â”\ƒ}[ƒN‚ğ•`‰æ
-	//ª
+	//ä»–ã®é§’ãŒãªã‘ã‚Œã°ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’æç”»
+	//â†‘
 	if ((Komas[CHICK + Branch].y > 140 && Komas[CHICK + Branch].y < 560) && Cflag == 0 && Komas[CHICK + Branch].flg != 0
 		&& (Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[CHICK + Branch].y - 140) / YMARGIN - Sign][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag))
@@ -702,11 +708,11 @@ void MoveChick(void)
 	}
 
 
-	//ˆÚ“®‰Â”\ƒ}[ƒN‚ğƒNƒŠƒbƒN‚µ‚½‚Æ‚«ˆÚ“®
-	//ª
+	//ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ãç§»å‹•
+	//â†‘
 	if (KeyFlg & KEY_INPUT_LEFT && Mflag == 1) {
 		if (MouseX > Komas[CHICK + Branch].x - HXMARGIN && MouseX < Komas[CHICK + Branch].x + HXMARGIN) {
-			if (Pflag == 1) {			//1P‚Ì‚Æ‚«
+			if (Pflag == 1) {			//1Pã®ã¨ã
 				if (Komas[CHICK + Branch].y > 140 && MouseY > Komas[CHICK + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[CHICK + Branch].y - HYMARGIN) {
 					if (Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] != 0
 						&& Komas[Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)
@@ -717,11 +723,11 @@ void MoveChick(void)
 					Komas[CHICK + Branch].y -= YMARGIN;
 					Stage[Komas[CHICK + Branch].y / YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 4 + Branch;
 
-					Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+					Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 					PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 				}
 			}
-			else if (Pflag == 2) {		//2P‚Ì‚Æ‚«
+			else if (Pflag == 2) {		//2Pã®ã¨ã
 				if (Komas[CHICK + Branch].y < 560 && MouseY > Komas[CHICK + Branch].y + HYMARGIN && MouseY < Komas[CHICK + Branch].y + (YMARGIN + HYMARGIN)) {
 					if (Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN + 2][(Komas[CHICK + Branch].x - 320) / XMARGIN] != 0
 						&& Komas[Stage[(Komas[CHICK + Branch].y - 280) / YMARGIN + 2][(Komas[CHICK + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)
@@ -732,7 +738,7 @@ void MoveChick(void)
 					Komas[CHICK + Branch].y += YMARGIN;
 					Stage[Komas[CHICK + Branch].y / YMARGIN - 1][(Komas[CHICK + Branch].x - 320) / XMARGIN] = 4 + Branch;
 
-					Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+					Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 					PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 				}
 			}
@@ -744,8 +750,8 @@ void MoveChick(void)
 
 void MoveGiraf(void)
 {
-	//‘¼‚Ì‹î‚ª‚È‚¯‚ê‚ÎˆÚ“®‰Â”\ƒ}[ƒN‚ğ•`‰æ
-		//ª
+	//ä»–ã®é§’ãŒãªã‘ã‚Œã°ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’æç”»
+		//â†‘
 	if (Komas[GIRAF + Branch].y > 140 && Cflag == 0 && Komas[GIRAF + Branch].flg != 0
 		&& (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] == 0
 		|| Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)) 
@@ -754,7 +760,7 @@ void MoveGiraf(void)
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
-	}	//¨
+	}	//â†’
 	if (Komas[GIRAF + Branch].x < 680 && Cflag == 0 && Komas[GIRAF + Branch].flg != 0
 		&& (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] == 0
 		|| Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -763,7 +769,7 @@ void MoveGiraf(void)
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
-	}	//©
+	}	//â†
 	if (Komas[GIRAF + Branch].x > 320 && Cflag == 0 && Komas[GIRAF + Branch].flg != 0
 		&& (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] == 0
 		|| Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -772,7 +778,7 @@ void MoveGiraf(void)
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-	}	//«
+	}	//â†“
 	if (Komas[GIRAF + Branch].y < 560 && Cflag == 0 && Komas[GIRAF + Branch].flg != 0
 		&& (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] == 0
 		|| Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)) 
@@ -784,11 +790,11 @@ void MoveGiraf(void)
 	}
 	
 
-	//ˆÚ“®‰Â”\ƒ}[ƒN‚ğƒNƒŠƒbƒN‚µ‚½‚Æ‚«ˆÚ“®
+	//ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ãç§»å‹•
 	if (KeyFlg & KEY_INPUT_LEFT && Mflag == 1) {
-			//ã‰º
+			//ä¸Šä¸‹
 		if (MouseX > Komas[GIRAF + Branch].x - HXMARGIN && MouseX < Komas[GIRAF + Branch].x + HXMARGIN) {
-			//ª
+			//â†‘
 			if (Komas[GIRAF + Branch].y > 140 && MouseY > Komas[GIRAF + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[GIRAF + Branch].y - HYMARGIN) {
 				if (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag) 
@@ -799,9 +805,9 @@ void MoveGiraf(void)
 				Komas[GIRAF + Branch].y -= YMARGIN;
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}//«
+			}//â†“
 			else if (Komas[GIRAF + Branch].y < 560 && MouseY > Komas[GIRAF + Branch].y + HYMARGIN && MouseY < Komas[GIRAF + Branch].y + (YMARGIN + HYMARGIN)) {
 				if (Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[GIRAF + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag) {
@@ -811,12 +817,12 @@ void MoveGiraf(void)
 				Komas[GIRAF + Branch].y += YMARGIN;
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
-		}	//¶‰E
+		}	//å·¦å³
 		else if (MouseY > Komas[GIRAF + Branch].y - HYMARGIN && MouseY < Komas[GIRAF + Branch].y + HYMARGIN) {
-			//©
+			//â†
 			if (Komas[GIRAF + Branch].x > 320 && MouseX > Komas[GIRAF + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[GIRAF + Branch].x - HXMARGIN) {
 				if (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -827,9 +833,9 @@ void MoveGiraf(void)
 				Komas[GIRAF + Branch].x -= XMARGIN;
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}//¨
+			}//â†’
 			else if (Komas[GIRAF + Branch].x < 680 && MouseX > Komas[GIRAF + Branch].x + HXMARGIN && MouseX < Komas[GIRAF + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -840,7 +846,7 @@ void MoveGiraf(void)
 				Komas[GIRAF + Branch].x += XMARGIN;
 				Stage[Komas[GIRAF + Branch].y / YMARGIN - 1][(Komas[GIRAF + Branch].x - 320) / XMARGIN] = 2 + Branch;
 				
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
@@ -848,12 +854,12 @@ void MoveGiraf(void)
 	
 }
 
-//Šps‚ÌˆÚ“®ˆ—
+//è§’è¡Œã®ç§»å‹•å‡¦ç†
 void MoveElepha(void)
 {
-	//‘¼‚Ì‹î‚ª‚È‚¯‚ê‚ÎˆÚ“®‰Â”\ƒ}[ƒN‚ğ•`‰æ
+	//ä»–ã®é§’ãŒãªã‘ã‚Œã°ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’æç”»
 	if (Komas[ELEPHA + Branch].y > 140) {
-			//¶ã
+			//å·¦ä¸Š
 		if (Komas[ELEPHA + Branch].x > 320 && Cflag == 0 && Komas[ELEPHA + Branch].flg != 0
 			&& (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] == 0
 			|| Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -862,7 +868,7 @@ void MoveElepha(void)
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-		}	//‰Eã
+		}	//å³ä¸Š
 		if (Komas[ELEPHA + Branch].x < 680 && Cflag == 0 && Komas[ELEPHA + Branch].flg != 0
 			&& (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -874,7 +880,7 @@ void MoveElepha(void)
 		}
 	}
 	if (Komas[ELEPHA + Branch].y < 560) {
-			//¶‰º
+			//å·¦ä¸‹
 		if (Komas[ELEPHA + Branch].x > 320 && Cflag == 0 && Komas[ELEPHA + Branch].flg != 0
 			&& (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] == 0
 			|| Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -883,7 +889,7 @@ void MoveElepha(void)
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-		}	//‰E‰º
+		}	//å³ä¸‹
 		if (Komas[ELEPHA + Branch].x < 680 && Cflag == 0 && Komas[ELEPHA + Branch].flg != 0
 			&& (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -895,10 +901,10 @@ void MoveElepha(void)
 		}
 	}
 
-	//ˆÚ“®‰Â”\ƒ}[ƒN‚ğƒNƒŠƒbƒN‚µ‚½‚ÆˆÚ“®
+	//ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ç§»å‹•
 	if (KeyFlg & KEY_INPUT_LEFT && Mflag == 1) {
 		if (Komas[ELEPHA + Branch].y > 140 && MouseY < Komas[ELEPHA + Branch].y - HYMARGIN && MouseY > Komas[ELEPHA + Branch].y - (YMARGIN + HYMARGIN)) {
-				//¶ã
+				//å·¦ä¸Š
 			if (Komas[ELEPHA + Branch].x > 320 && MouseX > Komas[ELEPHA + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA + Branch].x - HXMARGIN) {
 				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -909,9 +915,9 @@ void MoveElepha(void)
 				Komas[ELEPHA + Branch].y -= YMARGIN;
 				Komas[ELEPHA + Branch].x -= XMARGIN;
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}	//‰Eã
+			}	//å³ä¸Š
 			else if (Komas[ELEPHA + Branch].x < 680 && MouseX > Komas[ELEPHA + Branch].x + HXMARGIN && MouseX < Komas[ELEPHA + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -922,12 +928,12 @@ void MoveElepha(void)
 				Komas[ELEPHA + Branch].y -= YMARGIN;
 				Komas[ELEPHA + Branch].x += XMARGIN;
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
 		else if (Komas[ELEPHA + Branch].y < 560 && MouseY > Komas[ELEPHA + Branch].y + HYMARGIN && MouseY < Komas[ELEPHA + Branch].y + (YMARGIN + HYMARGIN)) {
-				//¶‰º
+				//å·¦ä¸‹
 			if (Komas[ELEPHA + Branch].x > 320 && MouseX > Komas[ELEPHA + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[ELEPHA + Branch].x - HXMARGIN) {
 				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[GIRAF + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -938,9 +944,9 @@ void MoveElepha(void)
 				Komas[ELEPHA + Branch].y += YMARGIN;
 				Komas[ELEPHA + Branch].x -= XMARGIN;
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}	//‰E‰º
+			}	//å³ä¸‹
 			else if (Komas[ELEPHA + Branch].x < 680 && MouseX > Komas[ELEPHA + Branch].x + HXMARGIN && MouseX < Komas[ELEPHA + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[ELEPHA + Branch].y - 280) / YMARGIN + 2][(Komas[ELEPHA + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -951,7 +957,7 @@ void MoveElepha(void)
 				Komas[ELEPHA + Branch].y += YMARGIN;
 				Komas[ELEPHA + Branch].x += XMARGIN;
 				Stage[Komas[ELEPHA + Branch].y / YMARGIN - 1][(Komas[ELEPHA + Branch].x - 320) / XMARGIN] = 3 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
@@ -960,8 +966,8 @@ void MoveElepha(void)
 
 void MoveLion(void)
 {
-	//‘¼‚Ì‹î‚ª‚È‚¯‚ê‚ÎˆÚ“®‰Â”\ƒ}[ƒN‚ğ•`‰æ
-		//ª
+	//ä»–ã®é§’ãŒãªã‘ã‚Œã°ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’æç”»
+		//â†‘
 	if (Komas[LION + Branch].y > 140 && Cflag == 0 && Komas[LION + Branch].flg != 0
 		&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)) 
@@ -970,7 +976,7 @@ void MoveLion(void)
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
-	}	//¨
+	}	//â†’
 	if (Komas[LION + Branch].x < 680 && Cflag == 0 && Komas[LION + Branch].flg != 0
 		&& (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
 			|| Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -979,7 +985,7 @@ void MoveLion(void)
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
-	}	//©
+	}	//â†
 	if (Komas[LION + Branch].x > 320 && Cflag == 0 && Komas[LION + Branch].flg != 0
 		&& (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
 		|| Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -988,7 +994,7 @@ void MoveLion(void)
 		if (Mflag == 0) {
 			Mflag = 1;
 		}
-	}	//«
+	}	//â†“
 	if (Komas[LION + Branch].y < 560 && Cflag == 0 && Komas[LION + Branch].flg != 0
 		&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] == 0
 		|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag)) 
@@ -999,7 +1005,7 @@ void MoveLion(void)
 		}
 	}
 	if (Komas[LION + Branch].y > 140) {
-		//¶ã
+		//å·¦ä¸Š
 		if (Komas[LION + Branch].x > 320 && Cflag == 0 && Komas[LION + Branch].flg != 0
 			&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
 			|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -1008,7 +1014,7 @@ void MoveLion(void)
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-		}	//‰Eã
+		}	//å³ä¸Š
 		if (Komas[LION + Branch].x < 680 && Cflag == 0 && Komas[LION + Branch].flg != 0
 			&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -1020,7 +1026,7 @@ void MoveLion(void)
 		}
 	}
 	if (Komas[LION + Branch].y < 560) {
-		//¶‰º
+		//å·¦ä¸‹
 		if (Komas[LION + Branch].x > 320 && Cflag == 0 && Komas[LION + Branch].flg != 0
 			&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] == 0
 			|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag)) 
@@ -1029,7 +1035,7 @@ void MoveLion(void)
 			if (Mflag == 0) {
 				Mflag = 1;
 			}
-		}	//‰E‰º
+		}	//å³ä¸‹
 		if (Komas[LION + Branch].x < 680 && Cflag == 0 && Komas[LION + Branch].flg != 0
 			&& (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] == 0
 			|| Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag)) 
@@ -1041,11 +1047,11 @@ void MoveLion(void)
 		}
 	}
 
-	//ˆÚ“®‰Â”\ƒ}[ƒN‚ğƒNƒŠƒbƒN‚µ‚½‚Æ‚«ˆÚ“®
+	//ç§»å‹•å¯èƒ½ãƒãƒ¼ã‚¯ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ãŸã¨ãç§»å‹•
 	if (KeyFlg & KEY_INPUT_LEFT && Mflag == 1) {
-		//ã‰º
+		//ä¸Šä¸‹
 		if (MouseX > Komas[LION + Branch].x - HXMARGIN && MouseX < Komas[LION + Branch].x + HXMARGIN) {
-			//ª
+			//â†‘
 			if (Komas[LION + Branch].y > 140 && MouseY > Komas[LION + Branch].y - (YMARGIN + HYMARGIN) && MouseY < Komas[LION + Branch].y - HYMARGIN) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag) 
@@ -1055,9 +1061,9 @@ void MoveLion(void)
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y -= YMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}//«
+			}//â†“
 			else if (Komas[LION + Branch].y < 560 && MouseY > Komas[LION + Branch].y + HYMARGIN && MouseY < Komas[LION + Branch].y + (YMARGIN + HYMARGIN)) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 320) / XMARGIN] - 1].pflg != Pflag) 
@@ -1067,12 +1073,12 @@ void MoveLion(void)
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].y += YMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			} 
-		}	//¶‰E
+		}	//å·¦å³
 		else if (MouseY > Komas[LION + Branch].y - HYMARGIN && MouseY < Komas[LION + Branch].y + HYMARGIN) {
-			//©
+			//â†
 			if (Komas[LION + Branch].x > 320 && MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN) {
 				if (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -1082,9 +1088,9 @@ void MoveLion(void)
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].x -= XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}//¨
+			}//â†’
 			else if (Komas[LION + Branch].x < 680 && MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -1094,13 +1100,13 @@ void MoveLion(void)
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 0;
 				Komas[LION + Branch].x += XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
 
 		if (Komas[LION + Branch].y > 140 && MouseY < Komas[LION + Branch].y - HYMARGIN && MouseY > Komas[LION + Branch].y - (YMARGIN + HYMARGIN)) {
-			//¶ã
+			//å·¦ä¸Š
 			if (Komas[LION + Branch].x > 320 && MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -1111,9 +1117,9 @@ void MoveLion(void)
 				Komas[LION + Branch].y -= YMARGIN;
 				Komas[LION + Branch].x -= XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}	//‰Eã
+			}	//å³ä¸Š
 			else if (Komas[LION + Branch].x < 680 && MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -1124,12 +1130,12 @@ void MoveLion(void)
 				Komas[LION + Branch].y -= YMARGIN;
 				Komas[LION + Branch].x += XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
 		else if (Komas[LION + Branch].y < 560 && MouseY > Komas[LION + Branch].y + HYMARGIN && MouseY < Komas[LION + Branch].y + (YMARGIN + HYMARGIN)) {
-			//¶‰º
+			//å·¦ä¸‹
 			if (Komas[LION + Branch].x > 320 && MouseX > Komas[LION + Branch].x - (XMARGIN + HXMARGIN) && MouseX < Komas[LION + Branch].x - HXMARGIN) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN - 2] - 1].pflg != Pflag) 
@@ -1140,9 +1146,9 @@ void MoveLion(void)
 				Komas[LION + Branch].y += YMARGIN;
 				Komas[LION + Branch].x -= XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
-			}	//‰E‰º
+			}	//å³ä¸‹
 			else if (Komas[LION + Branch].x < 680 && MouseX > Komas[LION + Branch].x + HXMARGIN && MouseX < Komas[LION + Branch].x + (XMARGIN + HXMARGIN)) {
 				if (Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] != 0
 					&& Komas[Stage[(Komas[LION + Branch].y - 280) / YMARGIN + 2][(Komas[LION + Branch].x - 140) / XMARGIN] - 1].pflg != Pflag) 
@@ -1153,7 +1159,7 @@ void MoveLion(void)
 				Komas[LION + Branch].y += YMARGIN;
 				Komas[LION + Branch].x += XMARGIN;
 				Stage[Komas[LION + Branch].y / YMARGIN - 1][(Komas[LION + Branch].x - 320) / XMARGIN] = 1 + Branch;
-				Status = 1;		//ƒ^[ƒ“ƒ`ƒFƒ“ƒWŠÖ”‚ÉˆÚ“®
+				Status = 1;		//ã‚¿ãƒ¼ãƒ³ãƒã‚§ãƒ³ã‚¸é–¢æ•°ã«ç§»å‹•
 				PlaySoundMem(KomaClick, DX_PLAYTYPE_BACK);
 			}
 		}
@@ -1165,17 +1171,22 @@ void ChangeTurn(void)
 	if (Pause == false) {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 		DrawBox(0, 0, 1000, 700, 0x000000, TRUE);
-		DrawFormatString(380, 185, 0xfffff00, "‚½[‚ñ‚±‚¤‚½‚¢");
-		DrawFormatStringToHandle(350, 250, 0xffff00, ContentsFont, "%dP ‚Ì‚Ğ‚Æ‚Ö‚±‚¤‚½‚¢‚µ‚Ä‚ËI",Pflag == 1 ? 2 : 1);
 
-		// ‚Â‚¬‚Ì‚Ğ‚Æ‚Öƒ{ƒ^ƒ“
-		DrawRotaGraph(535, 400, 1.4f, 0, Button, TRUE, FALSE);
-		DrawFormatStringToHandle(410, 380, 0x000000, MenuFont, "%dP‚Ì‚Ğ‚Æ‚Ö", Pflag == 1 ? 2 : 1);
+		// ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		constexpr int offsetX = -38;
+		constexpr int offsetY = 0;
+
+		DrawFormatStringToHandle(400 + offsetX, 185 + offsetY, 0xfffff00, MenuFont, "ãŸãƒ¼ã‚“ã“ã†ãŸã„");
+		DrawFormatStringToHandle(350 + offsetX, 250 + offsetY, 0xffff00, ContentsFont, "%dP ã®ã²ã¨ã¸ã“ã†ãŸã„ã—ã¦ã­ï¼", Pflag == 1 ? 2 : 1);
+
+		// ã¤ãã®ã²ã¨ã¸ãƒœã‚¿ãƒ³
+		DrawRotaGraph(535 + offsetX, 400 + offsetY, 1.4f, 0, Button, TRUE, FALSE);
+		DrawFormatStringToHandle(410 + offsetX, 380 + offsetY, 0x000000, MenuFont, "%dPã®ã²ã¨ã¸", Pflag == 1 ? 2 : 1);
 
 
-		// ƒ}ƒEƒX¶ƒNƒŠƒbƒN”»’è
+		// ãƒã‚¦ã‚¹å·¦ã‚¯ãƒªãƒƒã‚¯åˆ¤å®š
 		if (KeyFlg & MOUSE_INPUT_LEFT) {
-			if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//‚½[‚ñ‚±‚¤‚½‚¢ƒ{ƒ^ƒ“
+			if (MouseX < 680 + offsetX && MouseX > 390 + offsetX && MouseY > 345 + offsetY && MouseY < 450 + offsetY) {	//ãŸãƒ¼ã‚“ã“ã†ãŸã„ãƒœã‚¿ãƒ³
 				PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 				Pflag == 1 ? HandCount++ : HandCount2++;
 				//static int i = 1;
@@ -1191,8 +1202,8 @@ void ChangeTurn(void)
 				Status = 0; 
 			}
 		}
-		if (MouseX < 680 && MouseX > 390 && MouseY > 345 && MouseY < 450) {	//‚½[‚ñ‚±‚¤‚½‚¢ƒ{ƒ^ƒ“(ƒzƒo[)
-			DrawFormatStringToHandle(410, 380, 0xff69b4, MenuFont, "%dP‚Ì‚Ğ‚Æ‚Ö", Pflag == 1 ? 2 : 1);
+		if (MouseX < 680 + offsetX && MouseX > 390 + offsetX && MouseY > 345 + offsetY && MouseY < 450 + offsetY) {	//ãŸãƒ¼ã‚“ã“ã†ãŸã„ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+			DrawFormatStringToHandle(410 + offsetX, 380 + offsetY, 0xff69b4, MenuFont, "%dPã®ã²ã¨ã¸", Pflag == 1 ? 2 : 1);
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -1212,33 +1223,38 @@ void GameClear(void) {
 	if (CheckSoundMem(GameClearBGM) == 0) PlaySoundMem(GameClearBGM, DX_PLAYTYPE_BACK);
 
 	DrawGraph(0, 0, GameClearImage, TRUE);
-	DrawFormatString(310, 260, 0xffd700, "%dP ‚ª‚©‚¿‚µ‚Ü‚µ‚½I", Pflag == 1 ? 1 : 2);
-
-	// ƒ^ƒCƒgƒ‹ƒ{ƒ^ƒ“
-	DrawRotaGraph(520, 400, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatStringToHandle(445, 380, 0x000000, MenuFont, "‚½‚¢‚Æ‚é");
-
-	DrawRotaGraph(520, 500, 0.8f, 0, Button, TRUE, FALSE);
-	DrawFormatStringToHandle(465, 480, 0x000000, MenuFont, "‚¨‚í‚é");
+	DrawFormatStringToHandle(280, 260, 0xffd700, MenuFont, "%dP ãŒã‹ã¡ã—ã¾ã—ãŸï¼", Pflag == 1 ? 1 : 2);
 
 
-	// ƒ}ƒEƒX¶ƒNƒŠƒbƒN”»’è
+	// ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	constexpr int offsetX = -20;
+	constexpr int offsetY = 0;
+
+	// ã‚¿ã‚¤ãƒˆãƒ«ãƒœã‚¿ãƒ³
+	DrawRotaGraph(520 + offsetX, 400 + offsetY, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(440 + offsetX, 380 + offsetY, 0x000000, MenuFont, "ãŸã„ã¨ã‚‹");
+
+	DrawRotaGraph(520 + offsetX, 500 + offsetY, 0.8f, 0, Button, TRUE, FALSE);
+	DrawFormatStringToHandle(465 + offsetX, 480 + offsetY, 0x000000, MenuFont, "ãŠã‚ã‚‹");
+
+
+	// ãƒã‚¦ã‚¹å·¦ã‚¯ãƒªãƒƒã‚¯åˆ¤å®š
 	if (KeyFlg & MOUSE_INPUT_LEFT) {
-		if (MouseX < 605 && MouseX > 440 && MouseY > 370 && MouseY < 430) {	//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“
+		if (MouseX < 605 + offsetX && MouseX > 440 + offsetX && MouseY > 370 + offsetY && MouseY < 430 + offsetY) {	//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			StopSoundMem(GameClearBGM);
 			GameState = GAME_TITLE;
 		}
 
-		if (MouseX < 605 && MouseX > 440 && MouseY > 470 && MouseY < 530) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“
+		if (MouseX < 605 + offsetX && MouseX > 440 + offsetX && MouseY > 470 + offsetY && MouseY < 530 + offsetY) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³
 			PlaySoundMem(StartClick, DX_PLAYTYPE_BACK);
 			GameState = END;
 		}
 	}
-	if (MouseX < 605 && MouseX > 440 && MouseY > 370 && MouseY < 430) {//ƒ^ƒCƒgƒ‹‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-		DrawFormatStringToHandle(445, 380, 0xffd700, MenuFont, "‚½‚¢‚Æ‚é");
+	if (MouseX < 605 + offsetX && MouseX > 440 + offsetX && MouseY > 370 + offsetY && MouseY < 430 + offsetY) {//ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+		DrawFormatStringToHandle(440 + offsetX, 380 + offsetY, 0xffd700, MenuFont, "ãŸã„ã¨ã‚‹");
 	}
-	if (MouseX < 605 && MouseX > 440 && MouseY > 470 && MouseY < 530) {	//‚¨‚í‚é‰æ–Êƒ{ƒ^ƒ“(ƒzƒo[)
-		DrawFormatStringToHandle(465, 480, 0xffd700, MenuFont, "‚¨‚í‚é");
+	if (MouseX < 605 + offsetX && MouseX > 440 + offsetX && MouseY > 470 + offsetY && MouseY < 530 + offsetY) {	//ãŠã‚ã‚‹ç”»é¢ãƒœã‚¿ãƒ³(ãƒ›ãƒãƒ¼æ™‚)
+		DrawFormatStringToHandle(465 + offsetX, 480 + offsetY, 0xffd700, MenuFont, "ãŠã‚ã‚‹");
 	}
 }
