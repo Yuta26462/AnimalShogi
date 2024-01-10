@@ -1,6 +1,6 @@
 # どうぶつしょうぎ
 🔗[紹介サイト](https://miyagi-yuta.com/animalshogi/)
-![Image]("Preview.png")
+![Image](Preview.png)
 
 ## 動作環境
  Windows 10 64bit 以降
